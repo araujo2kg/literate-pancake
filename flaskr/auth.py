@@ -65,4 +65,41 @@ def login():
         flash(error)
     return render_template('auth/login.html')
 
+    
+# This annotation makes this function run before every view in the app, not just this blueprint
+@bp.before_app_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        g.user = None
+    else:
+        # This  will be accessible in every view with g.user['key']
+        g.user = get_db().execute(
+            'SELECT * FROM user WHERE id = ?', (user_id)
+        ).fetchone()
+
+
+# When not specified, default method is get
+@bp.route('/logout')
+def logout():
+    # Removes the user_id from the session, so load_logged_in_user, g.user == None
+    session.clear()
+    return redirect(url_for('index'))
         
+
+# If the function takes a callable as argument and returns one too, it can be used as an decorator 
+def login_required(view):
+
+    # Makes it so that the decorator preserves the matadata of the original function(view)
+    @functools.wraps(view)
+    # This function is what is called when a function is decorated with @login_required
+    def wrapped_view(**kwargs):
+        # If the user is not logged redirect to login page
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        
+        # Otherwise return the view, basically running the view function normally (user logged)
+        return view(**kwargs)
+    
+    return wrapped_view
