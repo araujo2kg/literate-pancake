@@ -48,7 +48,7 @@ def login():
         error = None
 
         user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username)
+            'SELECT * FROM user WHERE username = ?', (username,)
         ).fetchone()
         # fetchone returns one row from the query, if query gives no results, it returns None
 
@@ -76,7 +76,7 @@ def load_logged_in_user():
     else:
         # This  will be accessible in every view with g.user['key']
         g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id)
+            'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
 
