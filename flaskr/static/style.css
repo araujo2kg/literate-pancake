@@ -132,3 +132,19 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+.post-title {
+  text-decoration: none;
+}
+
+.post-title:hover {
+  color: #cc2f2e;
+}
+
+.post-body {
+  white-space: pre-line;
+}
+
+.post-buttons {
+  text-align: end;
+}
