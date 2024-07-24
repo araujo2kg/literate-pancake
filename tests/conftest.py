@@ -1,3 +1,9 @@
+"""
+conftest is a pytest configuration file,
+every fixture here will be accessible in all of
+the files in the tests directory.
+it too should be used to define setup and teardown methods
+"""
 import os
 import tempfile
 import pytest
