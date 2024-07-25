@@ -103,12 +103,11 @@ def delete(id):
     return redirect(url_for('blog.index'))
 
 
-@bp.route('/<int:id>/post', methods=('GET', 'POST'))
+@bp.route('/<int:id>/post', methods=('GET',))
 def post(id):
     # get_post checks if logged in user is the author by default, so we need to pass the false as arg
     post = get_post(id, check_author=False)
 
-    if request.method == 'GET':
-        return render_template("blog/post.html", post=post)
+    return render_template("blog/post.html", post=post)
     
     
