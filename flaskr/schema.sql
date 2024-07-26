@@ -18,6 +18,7 @@ CREATE TABLE post (
 );
 
 -- 0 = like, 1 = dislike
+-- IntegrityError is raised if more than one reaction per post is inserted by same user
 CREATE TABLE reactions (
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -25,8 +26,17 @@ CREATE TABLE reactions (
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (post_id) REFERENCES post (id),
     PRIMARY KEY (user_id, post_id),
-    CHECK (reaction in (0, 1))
+    CHECK (reaction in (0, 1)),
+    UNIQUE(user_id, post_id)
 );
 
 -- Helps with the constant queries to get the number of reactions (likes/dislikes)
 CREATE UNIQUE INDEX post_entries ON reactions (post_id);
+
+-- Get the post info including total likes and dislikes
+CREATE VIEW post_info AS
+SELECT post.id, post.author_id, post.created, post.title, post.body, user.username,
+(SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 0) as likes,
+(SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 1) as dislikes
+FROM post JOIN user ON post.author_id = user.id
+ORDER BY created DESC;

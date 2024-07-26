@@ -10,7 +10,7 @@
         <label for="title">Title</label>
         <!-- The request object will be accessible in the server response to the post request,
             so it can be used to restore the data to the state the user sended them -->
-        <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
+        <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required autofocus>
         <label for="body">Body</label>
         <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
         <input type="submit" value="Save">
