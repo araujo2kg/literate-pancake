@@ -21,9 +21,18 @@
                 {% endif %}
             </header>
             <p class="body">{{ post['body'] }}</p>
+        <div class="reactions">
+            <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
+                <input id="like-button" class="{{ 'like-button' if reactions[post['id']] == 0 }}" type="submit" value="Like">
+            </form>
+            <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}" method="post">
+                <input id="dislike-button" class="{{ 'dislike-button' if reactions[post['id']] == 1 }}" type="submit" value="Dislike">
+            </form>
+        </div>
         </article>
         {% if not loop.last %}
             <hr>
         {% endif %}
     {% endfor %}
+    <script src="{{ url_for('static', filename='blog.js') }}"></script>
 {% endblock %}

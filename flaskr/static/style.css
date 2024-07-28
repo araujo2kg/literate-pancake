@@ -148,3 +148,17 @@ input[type=submit] {
 .post-buttons {
   text-align: end;
 }
+
+.reactions {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.like-button {
+  background-color: #50ff50;
+}
+
+.dislike-button {
+  background-color: #ff5050;
+}

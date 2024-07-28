@@ -18,8 +18,9 @@ def index():
         reactions = db.execute(
             "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
         )
-        return render_template("blog/index.html", posts=posts, reactions=reactions)
-
+        # Turn it into a dict for easy access in the like/dislike buttons
+        reactions_dict = {reaction['post_id']: reaction['reaction'] for reaction in reactions}
+        return render_template("blog/index.html", posts=posts, reactions=reactions_dict)
 
     return render_template("blog/index.html", posts=posts)
 
@@ -126,21 +127,40 @@ def reaction(reaction, post_id):
     if reaction not in (0, 1):
         abort(404, "Invalid operation")
 
-    user_id = g.user["id"]
-
     db = get_db()
     try:
         db.execute(
             "INSERT INTO reactions (user_id, post_id, reaction)" " VALUES (?, ?, ?)",
-            (user_id, post_id, reaction),
+            (g.user["id"], post_id, reaction),
         )
         db.commit()
-    # If this is raised the unique constraint was violated (user tried to like something they disliked and vice versa)
-    # Just change their reaction value from 0 to 1 or vice versa
-    # If reaction is the same as existing one, remove the reaction
+        return "success, reaction registered"
+
     except sqlite3.IntegrityError:
+        # If post does not exist
+        if db.execute("SELECT * FROM post WHERE id = ?",
+                   (post_id,)).fetchone() == None:
+            abort(404, "Invalid operation")
+        
+        # Get existing reaction
         old_reaction = db.execute(
             "SELECT reaction FROM reactions WHERE user_id = ? AND post_id = ?",
-            (user_id, post_id),
+            (g.user["id"], post_id),
         ).fetchone()
-        pass
+        old_reaction = old_reaction["reaction"]
+
+        # If reaction is the same as existing, remove the reaction
+        if old_reaction == reaction:
+            db.execute(
+                "DELETE FROM reactions WHERE user_id = ? AND post_id = ? AND reaction = ?",
+                (g.user["id"], post_id, reaction),
+            )
+            db.commit()
+
+        # If reaction is different, update
+        if old_reaction != reaction:
+            db.execute("UPDATE reactions SET reaction = ? WHERE user_id = ? AND post_id = ?",
+                       (reaction, g.user["id"], post_id),)
+            db.commit()
+
+        return "exception raised, dealt with (deleted or updated)"
