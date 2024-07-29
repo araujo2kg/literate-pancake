@@ -156,9 +156,33 @@ input[type=submit] {
 }
 
 .like-button {
-  background-color: #50ff50;
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 25px;
 }
 
 .dislike-button {
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 25px;
+}
+
+.like-button:hover {
+  background-color: #50ff50;
+}
+
+.dislike-button:hover {
   background-color: #ff5050;
+}
+
+.activated-like {
+  background-color: #50ff50;
+  border-width: 0;
+  border-radius: 25px;
+}
+
+.activated-dislike {
+  background-color: #ff5050;
+  border-width: 0;
+  border-radius: 25px;
 }

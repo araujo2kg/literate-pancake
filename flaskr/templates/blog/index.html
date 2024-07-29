@@ -23,10 +23,10 @@
             <p class="body">{{ post['body'] }}</p>
         <div class="reactions">
             <form class="reaction-form"  action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
-                <input id="like-button" data-button-id="{{ post['id'] }}" class="{% if g.user['id'] %} {{ 'like-button' if reactions[post['id']] == 0 }} {% endif %}" type="submit" value="Like">
+                <input data-button-id="{{ post['id'] }}" class="like-button {% if g.user['id'] %} {{ 'activated-like' if reactions[post['id']] == 0 }} {% endif %}" type="submit" value="Like | {{ post['likes'] }}">
             </form>
             <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}" method="post">
-                <input id="dislike-button" data-button-id="{{ post['id'] }}" class="{% if g.user['id'] %} {{ 'dislike-button' if reactions[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike">
+                <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reactions[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
             </form>
         </div>
         </article>
@@ -34,5 +34,5 @@
             <hr>
         {% endif %}
     {% endfor %}
-    <script src="{{ url_for('static', filename='blog.js') }}"></script>
+    <script src="{{ url_for('static', filename='reactions.js') }}"></script>
 {% endblock %}

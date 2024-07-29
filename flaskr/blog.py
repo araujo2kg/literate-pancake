@@ -57,10 +57,12 @@ def get_post(id, check_author=True):
     post = (
         get_db()
         .execute(
-            "SELECT p.id, title, body, created, author_id, username"
+            "SELECT p.id, title, body, created, author_id, username,"
+            "(SELECT COUNT(reaction) FROM reactions WHERE post_id = ? AND reaction = 0) as likes,"
+            "(SELECT COUNT(reaction) FROM reactions WHERE post_id = ? AND reaction = 1) as dislikes"
             " FROM post p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ?",
-            (id,),
+            (id, id, id),
         )
         .fetchone()
     )
@@ -110,6 +112,8 @@ def delete(id):
     get_post(id)
     db = get_db()
     db.execute("DELETE FROM post WHERE id = ?", (id,))
+    # Delete all the reactions from the reaction table related to this post
+    db.execute("DELETE FROM reactions WHERE post_id = ?", (id,))
     db.commit()
     return redirect(url_for("blog.index"))
 
@@ -118,6 +122,18 @@ def delete(id):
 def post(id):
     # get_post checks if logged in user is the author by default, so we need to pass the false as arg
     post = get_post(id, check_author=False)
+
+    # If user is logged, return their reaction to the post
+    if g.user:
+        db = get_db()
+        reactions = db.execute(
+            "SELECT post_id, reaction FROM reactions WHERE user_id = ? AND post_id = ?",
+            (g.user["id"], id),
+        )
+        reaction_dict = {
+            reaction["post_id"]: reaction["reaction"] for reaction in reactions
+        }
+        return render_template("blog/post.html", post=post, reaction=reaction_dict)
 
     return render_template("blog/post.html", post=post)
 

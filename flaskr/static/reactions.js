@@ -26,31 +26,41 @@ document.querySelectorAll(".reaction-form").forEach(function(form) {
         })
         // Update the buttons accordingly
         .then(message => {
-            let button = event.target.children[0].value == "Like" ? "like-button" : "dislike-button"
+            let button = event.target.children[0].classList[0] == "like-button" ? "activated-like" : "activated-dislike"
+            let [txt, value] = event.target.children[0].value.split("|")
+            value = parseInt(value)
+
             if (message.includes('registered')) {
                // Apply the class
                event.target.children[0].classList.add(button);
+               event.target.children[0].value = txt + "| " + (value + 1)
             }
             else if (message.includes('deleted')) {
                event.target.children[0].classList.remove(button);
+               event.target.children[0].value = txt + "| " + (value - 1)
             }
             else if (message.includes('updated')) {
                 event.target.children[0].classList.add(button);
-                // Update the opposite buttons
+                event.target.children[0].value = txt + "| " + (value + 1)
+                // Update the opposite button
                 let button_id = event.target.children[0].dataset.buttonId
-                if (button == 'like-button') {
+                if (button == 'activated-like') {
                     let buttons = document.querySelectorAll(`input[data-button-id="${button_id}"]`)
                     buttons.forEach(button => {
-                        if (button.value == "Dislike") {
-                            button.classList.remove('dislike-button');
+                        if (button.classList[0] == "dislike-button") {
+                            button.classList.remove('activated-dislike');
+                            var [name, number] = button.value.split("|")
+                            button.value = name + "| " + (parseInt(number) - 1)
                         }
                     });
                }
-               else if (button == 'dislike-button') {
+               else if (button == 'activated-dislike') {
                     let buttons = document.querySelectorAll(`input[data-button-id="${button_id}"]`)
                     buttons.forEach(button => {
-                        if (button.value == "Like") {
-                            button.classList.remove('like-button');
+                        if (button.classList[0] == "like-button") {
+                            button.classList.remove('activated-like');
+                            var [name, number] = button.value.split("|")
+                            button.value = name + "| " + (parseInt(number) - 1)
                         }
                     });
                }

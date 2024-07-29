@@ -14,4 +14,13 @@
     <a href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
 </div>
 {% endif %}
+<div class="reactions">
+    <form class="reaction-form"  action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
+        <input data-button-id="{{ post['id'] }}" class="like-button {% if g.user['id'] %} {{ 'activated-like' if reaction[post['id']] == 0 }} {% endif %}" type="submit" value="Like | {{ post['likes'] }}">
+    </form>
+    <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}" method="post">
+        <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reaction[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
+    </form>
+</div>
+<script src="{{ url_for('static', filename='reactions.js') }}"></script>
 {% endblock %}
