@@ -22,11 +22,11 @@
             </header>
             <p class="body">{{ post['body'] }}</p>
         <div class="reactions">
-            <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
-                <input id="like-button" class="{{ 'like-button' if reactions[post['id']] == 0 }}" type="submit" value="Like">
+            <form class="reaction-form"  action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
+                <input id="like-button" data-button-id="{{ post['id'] }}" class="{% if g.user['id'] %} {{ 'like-button' if reactions[post['id']] == 0 }} {% endif %}" type="submit" value="Like">
             </form>
             <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}" method="post">
-                <input id="dislike-button" class="{{ 'dislike-button' if reactions[post['id']] == 1 }}" type="submit" value="Dislike">
+                <input id="dislike-button" data-button-id="{{ post['id'] }}" class="{% if g.user['id'] %} {{ 'dislike-button' if reactions[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike">
             </form>
         </div>
         </article>

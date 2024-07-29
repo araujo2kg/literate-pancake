@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS reactions;
+DROP VIEW IF EXISTS post_info;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,12 +27,9 @@ CREATE TABLE reactions (
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (post_id) REFERENCES post (id),
     PRIMARY KEY (user_id, post_id),
-    CHECK (reaction in (0, 1)),
-    UNIQUE(user_id, post_id)
+    CHECK (reaction in (0, 1))
 );
 
--- Helps with the constant queries to get the number of reactions (likes/dislikes)
-CREATE UNIQUE INDEX post_entries ON reactions (post_id);
 
 -- Get the post info including total likes and dislikes
 CREATE VIEW post_info AS

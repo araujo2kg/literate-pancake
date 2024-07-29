@@ -19,7 +19,9 @@ def index():
             "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
         )
         # Turn it into a dict for easy access in the like/dislike buttons
-        reactions_dict = {reaction['post_id']: reaction['reaction'] for reaction in reactions}
+        reactions_dict = {
+            reaction["post_id"]: reaction["reaction"] for reaction in reactions
+        }
         return render_template("blog/index.html", posts=posts, reactions=reactions_dict)
 
     return render_template("blog/index.html", posts=posts)
@@ -130,18 +132,17 @@ def reaction(reaction, post_id):
     db = get_db()
     try:
         db.execute(
-            "INSERT INTO reactions (user_id, post_id, reaction)" " VALUES (?, ?, ?)",
+            "INSERT INTO reactions (user_id, post_id, reaction) VALUES (?, ?, ?)",
             (g.user["id"], post_id, reaction),
         )
         db.commit()
-        return "success, reaction registered"
+        return "Reaction registered."
 
     except sqlite3.IntegrityError:
         # If post does not exist
-        if db.execute("SELECT * FROM post WHERE id = ?",
-                   (post_id,)).fetchone() == None:
+        if db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone() == None:
             abort(404, "Invalid operation")
-        
+
         # Get existing reaction
         old_reaction = db.execute(
             "SELECT reaction FROM reactions WHERE user_id = ? AND post_id = ?",
@@ -156,11 +157,13 @@ def reaction(reaction, post_id):
                 (g.user["id"], post_id, reaction),
             )
             db.commit()
+            return "Reaction deleted."
 
         # If reaction is different, update
         if old_reaction != reaction:
-            db.execute("UPDATE reactions SET reaction = ? WHERE user_id = ? AND post_id = ?",
-                       (reaction, g.user["id"], post_id),)
+            db.execute(
+                "UPDATE reactions SET reaction = ? WHERE user_id = ? AND post_id = ?",
+                (reaction, g.user["id"], post_id),
+            )
             db.commit()
-
-        return "exception raised, dealt with (deleted or updated)"
+        return "Reaction updated."
