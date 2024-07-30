@@ -111,11 +111,14 @@ def delete(id):
     # Get post checks if the logged user is the author
     get_post(id)
     db = get_db()
-    db.execute("DELETE FROM post WHERE id = ?", (id,))
     # Delete all the reactions from the reaction table related to this post
     db.execute("DELETE FROM reactions WHERE post_id = ?", (id,))
+    # Delete the post
+    db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
     return redirect(url_for("blog.index"))
+    # The order of queries here is important because when foreign key constraints are activated,
+    # you cannot deleted some data that has a foreign key pointing to it, to prevent orphaned data
 
 
 @bp.route("/<int:id>/post", methods=("GET",))
@@ -143,7 +146,7 @@ def post(id):
 def reaction(reaction, post_id):
     # 0 = like, 1 = dislike
     if reaction not in (0, 1):
-        abort(404, "Invalid operation")
+        abort(404, "Invalid reaction")
 
     db = get_db()
     try:
@@ -157,7 +160,7 @@ def reaction(reaction, post_id):
     except sqlite3.IntegrityError:
         # If post does not exist
         if db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone() == None:
-            abort(404, "Invalid operation")
+            abort(404, "Invalid post")
 
         # Get existing reaction
         old_reaction = db.execute(
@@ -175,11 +178,10 @@ def reaction(reaction, post_id):
             db.commit()
             return "Reaction deleted."
 
-        # If reaction is different, update
-        if old_reaction != reaction:
-            db.execute(
-                "UPDATE reactions SET reaction = ? WHERE user_id = ? AND post_id = ?",
-                (reaction, g.user["id"], post_id),
-            )
-            db.commit()
+        # If reaction is different, just update
+        db.execute(
+            "UPDATE reactions SET reaction = ? WHERE user_id = ? AND post_id = ?",
+            (reaction, g.user["id"], post_id),
+        )
+        db.commit()
         return "Reaction updated."

@@ -6,3 +6,7 @@ VALUES
 INSERT INTO post (title, body, author_id, created)
 VALUES
   ('test title', 'test' || x'0a' || 'body', 1, '2018-01-01 00:00:00');
+
+INSERT INTO reactions (user_id, post_id, reaction)
+VALUES
+  (1, 1, 0);
