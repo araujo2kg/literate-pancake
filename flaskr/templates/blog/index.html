@@ -19,6 +19,7 @@
                 <!-- This url_for is passing the post id to the update view, which receives it as an argument ('/<int:id>/update') -->
                 <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
                 {% endif %}
+                <button data-toggle-comment="{{ post['id'] }}" type="button" name="toggle-comment">Comment</button>
             </header>
             <p class="body">{{ post['body'] }}</p>
         <div class="reactions">
@@ -29,10 +30,33 @@
                 <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reactions[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
             </form>
         </div>
+        <form class="comment-form" action="/comments/create" method="post" name="{{ post['id'] }}">
+            <input type="hidden" name="post_id" value="{{ post['id'] }}">
+            <textarea name="body"></textarea>
+            <input type="submit" value="Submit">
+        </form>
         </article>
         {% if not loop.last %}
             <hr>
         {% endif %}
     {% endfor %}
     <script src="{{ url_for('static', filename='reactions.js') }}"></script>
+    <script src="{{ url_for('static', filename='comments.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", event => {
+            buttons = document.querySelectorAll("button[name='toggle-comment']")
+            buttons.forEach(button => {
+                button.addEventListener('click', event => {
+                    let post = event.target.getAttribute('data-toggle-comment')
+                    let form = document.querySelector(`form[name="${post}"]`)
+                    let display_property = window.getComputedStyle(form).display
+                    if (display_property == 'none') {
+                        form.style.display = 'flex'
+                    } else {
+                        form.style.display = 'none'
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

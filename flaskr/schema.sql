@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS reactions;
+DROP TABLE IF EXISTS comments;
 DROP VIEW IF EXISTS post_info;
 
 CREATE TABLE user (
@@ -18,8 +19,7 @@ CREATE TABLE post (
     FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
--- 0 = like, 1 = dislike
--- IntegrityError is raised if more than one reaction per post is inserted by same user
+-- 0 == Like, 1 == Dislike
 CREATE TABLE reactions (
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -31,7 +31,17 @@ CREATE TABLE reactions (
 );
 
 
--- Get the post info including total likes and dislikes
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    body TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (post_id) REFERENCES post (id),
+);
+
+
 CREATE VIEW post_info AS
 SELECT post.id, post.author_id, post.created, post.title, post.body, user.username,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 0) as likes,

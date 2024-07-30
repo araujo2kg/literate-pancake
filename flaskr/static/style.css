@@ -186,3 +186,7 @@ input[type=submit] {
   border-width: 0;
   border-radius: 25px;
 }
+
+.content .comment-form {
+  display: none;
+}
