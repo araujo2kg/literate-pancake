@@ -1,0 +1,20 @@
+{% if comments %}
+    {% for comment in comments %}
+        <article class="comments">
+            <header>
+                <div>
+                    <div class="about">by {{ comment['username'] }} on {{ comment['created'].strftime('%Y-%m-%d') }}</div>
+                </div>
+                {% if g.user['id'] == comment['user_id'] %}
+                    <div class="edit">
+                        <a href="{{ url_for('comments.update', id=comment['id']) }}">Edit</a> 
+                    </div>
+                {% endif %}
+                <p class="comment-body">{{ comment['body'] }}</p>
+            </header>
+        </article>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endif %}

@@ -2,6 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from flaskr.comments import get_comments
 import sqlite3
 
 bp = Blueprint("blog", __name__)
@@ -125,6 +126,7 @@ def delete(id):
 def post(id):
     # get_post checks if logged in user is the author by default, so we need to pass the false as arg
     post = get_post(id, check_author=False)
+    comments = get_comments(id)
 
     # If user is logged, return their reaction to the post
     if g.user:
@@ -136,9 +138,9 @@ def post(id):
         reaction_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
-        return render_template("blog/post.html", post=post, reaction=reaction_dict)
+        return render_template("blog/post.html", post=post, reaction=reaction_dict, comments=comments)
 
-    return render_template("blog/post.html", post=post)
+    return render_template("blog/post.html", post=post, comments=comments)
 
 
 @bp.route("/<int:reaction>/<int:post_id>/reaction", methods=("POST",))

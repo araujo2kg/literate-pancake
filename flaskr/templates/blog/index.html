@@ -29,12 +29,7 @@
                 <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reactions[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
             </form>
         </div>
-        <button data-toggle-comment="{{ post['id'] }}" type="button" name="toggle-comment">Comment</button>
-        <form class="comment-form" action="/comments/create" method="post" name="{{ post['id'] }}">
-            <input type="hidden" name="post_id" value="{{ post['id'] }}">
-            <textarea name="body"></textarea>
-            <input type="submit" value="Submit">
-        </form>
+        {% include 'comments/comment-form.html' %}
         </article>
         {% if not loop.last %}
             <hr>
@@ -42,20 +37,4 @@
     {% endfor %}
     <script src="{{ url_for('static', filename='reactions.js') }}"></script>
     <script src="{{ url_for('static', filename='comments.js') }}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", event => {
-                document.body.addEventListener('click', event => {
-                    if (event.target.name == 'toggle-comment') {
-                    let post = event.target.getAttribute('data-toggle-comment')
-                    let form = document.querySelector(`form[name="${post}"]`)
-                    let display_property = window.getComputedStyle(form).display
-                    if (display_property == 'none') {
-                        form.style.display = 'flex'
-                    } else {
-                        form.style.display = 'none'
-                    }
-                }
-            });
-        });
-    </script>
 {% endblock %}

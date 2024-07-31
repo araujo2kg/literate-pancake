@@ -51,6 +51,9 @@ def create_app(test_config=None):  # factory function
 
     app.register_blueprint(blog.bp)
 
+    # Refers to the index view in the blog bp
     app.add_url_rule("/", endpoint="index")
+    from . import comments
+    app.register_blueprint(comments.bp)
 
     return app

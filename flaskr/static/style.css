@@ -92,7 +92,7 @@ nav ul li a, nav ul li span, header .action {
 }
 
 .post .about {
-  color: slategray;
+  color: gray;
   font-style: italic;
 }
 
@@ -143,6 +143,7 @@ input[type=submit] {
 
 .post-body {
   white-space: pre-line;
+  text-align: center;
 }
 
 .post-buttons {
@@ -189,4 +190,20 @@ input[type=submit] {
 
 .content .comment-form {
   display: none;
+}
+
+.comments .about {
+  color: gray;
+  font-style: italic;
+  text-align: right;
+}
+
+.comment-body {
+  text-align: left;
+  white-space: pre-line;
+}
+
+.edit {
+  text-align: right;
+  margin-top: 15px;
 }

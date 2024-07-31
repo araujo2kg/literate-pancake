@@ -22,5 +22,11 @@
         <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reaction[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
     </form>
 </div>
+{% include "comments/comment-form.html" %}
+<hr>
+<h1 style="text-align: center;">Comments</h1>
+<hr>
+{% include "comments/comment-list.html" %}
 <script src="{{ url_for('static', filename='reactions.js') }}"></script>
+<script src="{{ url_for('static', filename='comments.js') }}"></script>
 {% endblock %}
