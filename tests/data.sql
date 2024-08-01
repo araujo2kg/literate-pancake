@@ -10,3 +10,7 @@ VALUES
 INSERT INTO reactions (user_id, post_id, reaction)
 VALUES
   (1, 1, 0);
+
+INSERT INTO comments (user_id, post_id, body)
+VALUES
+  (1, 1, "comment body test")

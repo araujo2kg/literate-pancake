@@ -1,5 +1,4 @@
 import pytest
-import sqlite3
 from flaskr.db import get_db
 
 
@@ -10,6 +9,7 @@ def test_index(client, auth):
     assert b"Register" in response.data
     assert b"Like | 1" in response.data
     assert b"Dislike | 0" in response.data
+    assert b"/comments/create" in response.data
 
     auth.login()
     response = client.get("/")
@@ -103,17 +103,19 @@ def test_create_update_validate(client, auth, path):
 
 def test_delete(client, auth, app):
     auth.login()
-    # Post to delete view, that should remove the /1/ post&reactions and redirect to index
+    # Post to delete view, that should remove the /1/ post&reactions&comments and redirect to index
     response = client.post("/1/delete")
     assert response.headers["Location"] == "/"
 
-    # Checks if post and reactions were deleted
+    # Checks if post, reactions and comments were deleted
     with app.app_context():
         db = get_db()
         reactions = db.execute("SELECT * FROM reactions WHERE post_id = 1").fetchone()
+        comments = db.execute("SELECT * FROM comments WHERE post_id = 1").fetchone()
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
         assert post is None
         assert reactions is None
+        assert comments is None
 
 
 def test_post(client, auth):
@@ -123,12 +125,15 @@ def test_post(client, auth):
     assert b'href="/1/update"' not in response.data
     assert b"Like | 1" in response.data
     assert b"Dislike | 0" in response.data
+    assert b"/comments/create" in response.data
 
     auth.login()
     response = client.get("/1/post")
     assert b'href="/1/update"' in response.data
     assert b"Like | 1" in response.data
     assert b"Dislike | 0" in response.data
+    assert b'href="/comments/1/update"' in response.data
+    assert b"comment body test" in response.data
 
 
 def test_reactions(client, auth, app):

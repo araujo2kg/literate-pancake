@@ -114,6 +114,8 @@ def delete(id):
     db = get_db()
     # Delete all the reactions from the reaction table related to this post
     db.execute("DELETE FROM reactions WHERE post_id = ?", (id,))
+    # Delete all the comments
+    db.execute("DELETE FROM comments WHERE post_id = ?", (id,))
     # Delete the post
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
@@ -138,7 +140,9 @@ def post(id):
         reaction_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
-        return render_template("blog/post.html", post=post, reaction=reaction_dict, comments=comments)
+        return render_template(
+            "blog/post.html", post=post, reaction=reaction_dict, comments=comments
+        )
 
     return render_template("blog/post.html", post=post, comments=comments)
 
