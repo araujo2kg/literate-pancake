@@ -3,7 +3,7 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 from flaskr.comments import get_comments
-from flaskr.tag import treat_tags, create_tags, link_tags
+from flaskr.tag import treat_tags, create_tags, link_tags, get_tags, remove_tags
 import json
 import sqlite3
 
@@ -43,7 +43,7 @@ def create():
         try:
             tags = json.loads(tags)
             # Lowercase, remove white-spaces etc.
-            treat_tags(tags)
+            tags = treat_tags(tags)
             # Add tags to database if they still do not exist
             create_tags(tags)
         # In case no tags were passed
@@ -102,11 +102,21 @@ def get_post(id, check_author=True):
 def update(id):
     # The get_post check if the user is the author of the post
     post = get_post(id)
+    tags = get_tags(id)
 
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
         error = None
+
+        # Tagify tags in json format
+        tags = request.form.get("tags")
+        try:
+            tags = json.loads(tags)
+            tags = treat_tags(tags)
+            create_tags(tags)
+        except json.JSONDecodeError:
+            tags = None
 
         if not title:
             error = "Title is required."
@@ -115,13 +125,19 @@ def update(id):
             flash(error)
         else:
             db = get_db()
+            # Update post
             db.execute(
                 "UPDATE post SET title = ?, body = ?" " WHERE id= ?", (title, body, id)
             )
+            # Remove previous tags
+            remove_tags(id)
+            # Update tags
+            if tags is not None:
+                link_tags(id, tags)
             db.commit()
             return redirect(url_for("blog.index"))
 
-    return render_template("blog/update.html", post=post)
+    return render_template("blog/update.html", post=post, tags=tags)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

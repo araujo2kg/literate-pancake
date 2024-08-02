@@ -31,5 +31,7 @@
             delimiters: " ",
             maxTags: 10,
         })
+        var post_tags = JSON.parse('{{ tags | tojson | safe }}');
+        tagify.addTags(post_tags)
     </script>
 {% endblock %}

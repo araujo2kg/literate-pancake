@@ -39,5 +39,12 @@ def get_tags(post_id):
     tags = db.execute(
         "SELECT name FROM tag WHERE id IN (SELECT tag_id FROM posts_tags WHERE post_id = ?)", (post_id,)
     ).fetchall()
+    tags = [tag["name"] for tag in tags]
     return tags
+
+def remove_tags(post_id):
+    db = get_db()
+    db.execute(
+        "DELETE FROM posts_tags WHERE post_id = ?", (post_id,)
+    )
     
