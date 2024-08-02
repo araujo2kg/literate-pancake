@@ -3,6 +3,8 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 from flaskr.comments import get_comments
+from flaskr.tag import treat_tags, create_tags, link_tags
+import json
 import sqlite3
 
 bp = Blueprint("blog", __name__)
@@ -36,6 +38,18 @@ def create():
         body = request.form["body"]
         error = None
 
+        # Tagify returns json string
+        tags = request.form.get("tags")
+        try:
+            tags = json.loads(tags)
+            # Lowercase, remove white-spaces etc.
+            treat_tags(tags)
+            # Add tags to database if they still do not exist
+            create_tags(tags)
+        # In case no tags were passed
+        except json.JSONDecodeError:
+            tags = None
+
         if not title:
             error = "Title is required."
 
@@ -43,10 +57,14 @@ def create():
             flash(error)
         else:
             db = get_db()
-            db.execute(
+            result = db.execute(
                 "INSERT INTO post (title, body, author_id)" " VALUES (?, ?, ?)",
                 (title, body, g.user["id"]),
             )
+            # If tags were provided, insert in the junction table
+            if tags is not None:
+                post_id = result.lastrowid
+                link_tags(post_id, tags)
             db.commit()
             return redirect(url_for("blog.index"))
 

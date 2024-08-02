@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block head %}
+{% include "tag/tagify.html" %}
+{% endblock %}
+
 {% block header %}
     <h1>{% block title %}New Post{% endblock %}</h1>
 {% endblock %}
@@ -10,6 +14,16 @@
         <input name="title" id="title" value="{{ request.form['title'] }}" required autofocus>
         <label for="body">Body</label>
         <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+        <label for="tags">Tags</label>
+        <input name="tags" id="tags">
         <input type="submit" value="Save">
     </form>
+    <script>
+        var input = document.querySelector('input[name=tags]');
+        var tagify = new Tagify(input, {
+            delimiters: " ",
+            maxTags: 10,
+            placeholder: "Add tags!"
+        })
+    </script>
 {% endblock %}

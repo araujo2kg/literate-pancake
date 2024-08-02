@@ -1,6 +1,8 @@
 DROP VIEW IF EXISTS post_info;
+DROP TABLE IF EXISTS posts_tags;
 DROP TABLE IF EXISTS reactions;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS user;
 
@@ -19,7 +21,6 @@ CREATE TABLE post (
     FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
--- 0 == Like, 1 == Dislike
 CREATE TABLE reactions (
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -30,7 +31,6 @@ CREATE TABLE reactions (
     CHECK (reaction in (0, 1))
 );
 
-
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -40,6 +40,20 @@ CREATE TABLE comments (
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (post_id) REFERENCES post (id)
 );
+
+CREATE TABLE tag (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE posts_tags (
+    post_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES post (id),
+    FOREIGN KEY (tag_id) REFERENCES tag (id),
+    PRIMARY KEY (post_id, tag_id)
+);
+
 
 
 CREATE VIEW post_info AS
