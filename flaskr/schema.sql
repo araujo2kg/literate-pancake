@@ -55,10 +55,14 @@ CREATE TABLE posts_tags (
 );
 
 
-
 CREATE VIEW post_info AS
 SELECT post.id, post.author_id, post.created, post.title, post.body, user.username,
+GROUP_CONCAT(tag.name) as tag_names,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 0) as likes,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 1) as dislikes
-FROM post JOIN user ON post.author_id = user.id
+FROM post 
+JOIN user ON post.author_id = user.id
+JOIN posts_tags ON post.id = posts_tags.post_id
+JOIN tag ON posts_tags.tag_id = tag.id
+GROUP BY post.id
 ORDER BY created DESC;

@@ -48,3 +48,35 @@ def remove_tags(post_id):
         "DELETE FROM posts_tags WHERE post_id = ?", (post_id,)
     )
     
+
+@bp.route("/<tagname>/", methods=("GET",))
+def posts_by_tag(tagname):
+    db = get_db()
+    error = None
+
+    tag_id = db.execute("SELECT id FROM tag WHERE name = ?", (tagname,)).fetchone()
+    if tag_id is None:
+        abort(404, f"Tag ({tagname}) not found.")
+    tag_id = tag_id[0]
+
+    posts = db.execute(
+        "SELECT * FROM post_info "
+        "WHERE id IN "
+        "(SELECT post_id FROM posts_tags WHERE tag_id = ?)",
+        (tag_id,)
+        ).fetchall()
+    
+    if not posts:
+        abort(404, f"No posts found for tag ({tagname})")
+
+    if g.user:
+        db = get_db()
+        reactions = db.execute(
+            "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
+        )
+        reactions_dict = {
+            reaction["post_id"]: reaction["reaction"] for reaction in reactions
+        }
+        return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, reactions=reactions_dict)
+
+    return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname)

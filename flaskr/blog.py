@@ -150,6 +150,8 @@ def delete(id):
     db.execute("DELETE FROM reactions WHERE post_id = ?", (id,))
     # Delete all the comments
     db.execute("DELETE FROM comments WHERE post_id = ?", (id,))
+    # Delete the tags
+    db.execute("DELETE FROM posts_tags WHERE post_id = ?", (id,))
     # Delete the post
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
@@ -163,6 +165,7 @@ def post(id):
     # get_post checks if logged in user is the author by default, so we need to pass the false as arg
     post = get_post(id, check_author=False)
     comments = get_comments(id)
+    tags = get_tags(id)
 
     # If user is logged, return their reaction to the post
     if g.user:
@@ -175,10 +178,10 @@ def post(id):
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
         return render_template(
-            "blog/post.html", post=post, reaction=reaction_dict, comments=comments
+            "blog/post.html", post=post, reaction=reaction_dict, comments=comments, tags=tags
         )
 
-    return render_template("blog/post.html", post=post, comments=comments)
+    return render_template("blog/post.html", post=post, comments=comments, tags=tags)
 
 
 @bp.route("/<int:reaction>/<int:post_id>/reaction", methods=("POST",))
