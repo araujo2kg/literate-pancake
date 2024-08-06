@@ -13,4 +13,12 @@ VALUES
 
 INSERT INTO comments (user_id, post_id, body)
 VALUES
-  (1, 1, "comment body test")
+  (1, 1, "comment body test");
+
+INSERT INTO tag (name)
+VALUES
+  ("tagname");
+
+INSERT INTO posts_tags (post_id, tag_id)
+VALUES
+  (1, 1);

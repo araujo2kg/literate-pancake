@@ -10,6 +10,8 @@ def test_index(client, auth):
     assert b"Like | 1" in response.data
     assert b"Dislike | 0" in response.data
     assert b"/comments/create" in response.data
+    assert b"#tagname" in response.data
+    assert b'href="/tag/tagname/"' in response.data
 
     auth.login()
     response = client.get("/")
@@ -66,7 +68,7 @@ def test_create(client, auth, app):
     auth.login()
     assert client.get("/create").status_code == 200
     # Insert a new element in the post table
-    client.post("/create", data={"title": "created", "body": ""})
+    client.post("/create", data={"title": "created", "body": "hello there", "tags": '[{"value": "tag1"}, {"value": "tag2"}]'})
 
     with app.app_context():
         db = get_db()
@@ -74,18 +76,24 @@ def test_create(client, auth, app):
         count = db.execute("SELECT COUNT(id) FROM post").fetchone()[0]
         assert count == 2
 
+    # New post with no tags
+    assert client.post("/create", data={"title": "created", "body": "hello there", "tags": ""}).status_code == 302
+
 
 def test_update(client, auth, app):
     auth.login()
     assert client.get("/1/update").status_code == 200
     # Update the element in the post table (1)
-    client.post("/1/update", data={"title": "updated", "body": ""})
+    client.post("/1/update", data={"title": "updated", "body": "", "tags": ""})
 
     with app.app_context():
         db = get_db()
         # Check if it was updated
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
         assert post["title"] == "updated"
+
+    # Update element with tags
+    assert client.post("/1/update", data={"title": "updated", "body": "", "tags": '[{"value": "tag1"}, {"value": "tag2"}]'}).status_code == 302
 
 
 @pytest.mark.parametrize(
@@ -97,7 +105,7 @@ def test_update(client, auth, app):
 )
 def test_create_update_validate(client, auth, path):
     auth.login()
-    response = client.post(path, data={"title": "", "body": ""})
+    response = client.post(path, data={"title": "", "body": "", "tags": ""})
     assert b"Title is required." in response.data
 
 
@@ -126,6 +134,8 @@ def test_post(client, auth):
     assert b"Like | 1" in response.data
     assert b"Dislike | 0" in response.data
     assert b"/comments/create" in response.data
+    assert b"#tagname" in response.data
+    assert b'href="/tag/tagname/"' in response.data
 
     auth.login()
     response = client.get("/1/post")
