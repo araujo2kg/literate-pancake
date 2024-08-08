@@ -70,7 +70,6 @@ def posts_by_tag(tagname):
         abort(404, f"No posts found for tag ({tagname})")
 
     if g.user:
-        db = get_db()
         reactions = db.execute(
             "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
         )

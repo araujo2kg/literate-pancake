@@ -11,7 +11,10 @@
         <ul>
             <li>
                 <form class="search-form" action="/search" method="get">
-                    <input type="text" placeholder="Search" name="q">
+                    <div class="search-container">
+                        <input type="text" placeholder="Search" name="q">
+                        <button type="submit">🔍</button>
+                    </div>
                 </form>
             </li>
             {% if g.user %}

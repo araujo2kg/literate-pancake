@@ -212,3 +212,26 @@ nav ul li {
   display: flex;
   align-items: center;
 }
+
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-container input {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-right: none;
+}
+
+.search-container button {
+  border: 1px solid #ccc;
+  border-left: none;
+  background: #fff;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.search-container input:focus {
+  outline: none;
+} 

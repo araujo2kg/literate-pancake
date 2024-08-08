@@ -17,7 +17,6 @@ def index():
 
     # If user is logged, return their likes and dislikes too
     if g.user:
-        db = get_db()
         reactions = db.execute(
             "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
         )
