@@ -51,6 +51,7 @@ def test_posts_by_tag(client, auth, app):
     assert b"#tagname" in response.data
     assert b'href="/tag/tagname/"' in response.data
     assert b'href="/1/update"' not in response.data
+    assert b"Page 1 of 1" in response.data
     auth.login()
     response = client.get("/tag/tagname/")
     assert b'href="/1/update"' in response.data

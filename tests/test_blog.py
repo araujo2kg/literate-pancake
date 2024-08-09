@@ -12,6 +12,7 @@ def test_index(client, auth):
     assert b"/comments/create" in response.data
     assert b"#tagname" in response.data
     assert b'href="/tag/tagname/"' in response.data
+    assert b"Page 1 of 1" in response.data
 
     auth.login()
     response = client.get("/")
