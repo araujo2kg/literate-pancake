@@ -38,6 +38,7 @@
             <hr>
         {% endif %}
     {% endfor %}
+    {% include 'pagination/pagination.html' %}
     <script src="{{ url_for('static', filename='reactions.js') }}"></script>
     <script src="{{ url_for('static', filename='comments.js') }}"></script>
 {% endblock %}

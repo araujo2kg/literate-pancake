@@ -2,6 +2,7 @@ from flask import Blueprint, g, redirect, request, url_for, render_template
 from werkzeug.exceptions import abort
 from flaskr.db import get_db
 from flaskr.auth import login_required
+from flaskr.pagination import Pagination
 import sqlite3
 
 bp = Blueprint("tag", __name__, url_prefix="/tag")
@@ -53,17 +54,27 @@ def remove_tags(post_id):
 def posts_by_tag(tagname):
     db = get_db()
     error = None
+    page = request.args.get("page", 1, type=int)
 
     tag_id = db.execute("SELECT id FROM tag WHERE name = ?", (tagname,)).fetchone()
     if tag_id is None:
         abort(404, f"Tag ({tagname}) not found.")
     tag_id = tag_id[0]
 
-    posts = db.execute(
-        "SELECT * FROM post_info "
+    total_items = db.execute(
+        "SELECT COUNT(id) FROM post_info "
         "WHERE id IN "
         "(SELECT post_id FROM posts_tags WHERE tag_id = ?)",
         (tag_id,)
+        ).fetchone()[0]
+    pagination = Pagination(page=page, total_items=total_items)
+
+    posts = db.execute(
+        "SELECT * FROM post_info "
+        "WHERE id IN "
+        "(SELECT post_id FROM posts_tags WHERE tag_id = ?) "
+        "LIMIT ? OFFSET ?",
+        (tag_id, pagination.per_page, pagination.offset)
         ).fetchall()
     
     if not posts:
@@ -76,6 +87,6 @@ def posts_by_tag(tagname):
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
-        return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, reactions=reactions_dict)
+        return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, reactions=reactions_dict, total_pages=pagination.total_pages, page=page, endpoint='tag.posts_by_tag')
 
-    return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname)
+    return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, page=page, total_pages=pagination.total_pages, endpoint='tag.posts_by_tag')
