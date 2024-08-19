@@ -17,8 +17,11 @@ def index():
     db = get_db()
     total_items = db.execute("SELECT COUNT(id) FROM post_info").fetchone()[0]
     pagination = Pagination(total_items=total_items, page=page)
-    
-    posts = db.execute("SELECT * FROM post_info LIMIT ? OFFSET ?", (pagination.per_page, pagination.offset)).fetchall()
+
+    posts = db.execute(
+        "SELECT * FROM post_info LIMIT ? OFFSET ?",
+        (pagination.per_page, pagination.offset),
+    ).fetchall()
     # If user is logged, return their likes and dislikes too
     if g.user:
         reactions = db.execute(
@@ -27,9 +30,24 @@ def index():
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
-        return render_template("blog/index.html", posts=posts, reactions=reactions_dict, page=page, total_pages=pagination.total_pages, endpoint='blog.index', q=request.args.get('q'))
+        return render_template(
+            "blog/index.html",
+            posts=posts,
+            reactions=reactions_dict,
+            page=page,
+            total_pages=pagination.total_pages,
+            endpoint="blog.index",
+            q=request.args.get("q"),
+        )
 
-    return render_template("blog/index.html", posts=posts, page=page, total_pages=pagination.total_pages, endpoint='blog.index', q=request.args.get('q'))
+    return render_template(
+        "blog/index.html",
+        posts=posts,
+        page=page,
+        total_pages=pagination.total_pages,
+        endpoint="blog.index",
+        q=request.args.get("q"),
+    )
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -180,7 +198,11 @@ def post(id):
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
         return render_template(
-            "blog/post.html", post=post, reaction=reaction_dict, comments=comments, tags=tags
+            "blog/post.html",
+            post=post,
+            reaction=reaction_dict,
+            comments=comments,
+            tags=tags,
         )
 
     return render_template("blog/post.html", post=post, comments=comments, tags=tags)

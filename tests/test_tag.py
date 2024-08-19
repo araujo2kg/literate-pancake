@@ -13,7 +13,9 @@ def test_create_tags(app):
     with app.app_context():
         create_tags(input)
         db = get_db()
-        count = db.execute("SELECT COUNT(id) FROM tag WHERE name = 'tag1' OR name = 'tag2'").fetchone()[0]
+        count = db.execute(
+            "SELECT COUNT(id) FROM tag WHERE name = 'tag1' OR name = 'tag2'"
+        ).fetchone()[0]
         assert count == 2
 
 
@@ -23,14 +25,16 @@ def test_link_tags(app):
         create_tags(input)
         link_tags(1, input)
         db = get_db()
-        count = db.execute("SELECT COUNT(post_id) FROM posts_tags WHERE tag_id = 2 OR tag_id = 3").fetchone()[0]
+        count = db.execute(
+            "SELECT COUNT(post_id) FROM posts_tags WHERE tag_id = 2 OR tag_id = 3"
+        ).fetchone()[0]
         assert count == 2
 
         # Invalid post case
         error = link_tags(666, input)
         assert error == "Invalid post."
 
-    
+
 def test_get_tags(app):
     with app.app_context():
         tags = get_tags(1)
@@ -41,10 +45,12 @@ def test_remove_tags(app):
     with app.app_context():
         remove_tags(1)
         db = get_db()
-        count = db.execute("SELECT COUNT(post_id) FROM posts_tags WHERE post_id = 1").fetchone()[0]
+        count = db.execute(
+            "SELECT COUNT(post_id) FROM posts_tags WHERE post_id = 1"
+        ).fetchone()[0]
         assert count == 0
 
-        
+
 def test_posts_by_tag(client, auth, app):
     response = client.get("/tag/tagname/")
     assert response.status_code == 200
@@ -56,7 +62,7 @@ def test_posts_by_tag(client, auth, app):
     response = client.get("/tag/tagname/")
     assert b'href="/1/update"' in response.data
 
-    # Tag does not exist 
+    # Tag does not exist
     response = client.get("/tag/none/")
     assert b"Tag (none) not found." in response.data
 
@@ -66,6 +72,3 @@ def test_posts_by_tag(client, auth, app):
         client.post("/1/delete")
         response = client.get("/tag/tagname/")
         assert b"No posts found for tag" in response.data
-    
-    
-    

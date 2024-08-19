@@ -12,5 +12,3 @@ def test_search(client, auth):
     # Search with no parameter (none)
     response = client.get("/search")
     assert response.status_code == 200
-
-    

@@ -17,11 +17,13 @@ def treat_tags(tags):
 def create_tags(tags):
     db = get_db()
     for tag in tags:
-        result = db.execute("SELECT id FROM tag WHERE name = ?", (tag["value"],)).fetchone()
+        result = db.execute(
+            "SELECT id FROM tag WHERE name = ?", (tag["value"],)
+        ).fetchone()
         if result is None:
             db.execute("INSERT INTO tag (name) VALUES (?)", (tag["value"],))
 
-            
+
 def link_tags(post_id, tags):
     # get the tags ids and insert in the junction table
     db = get_db()
@@ -30,25 +32,30 @@ def link_tags(post_id, tags):
         return "Invalid post."
     for tag in tags:
         # Get tags ids
-        tag["value"] = db.execute("SELECT id FROM tag WHERE name = ?", (tag["value"],)).fetchone()[0]
+        tag["value"] = db.execute(
+            "SELECT id FROM tag WHERE name = ?", (tag["value"],)
+        ).fetchone()[0]
         # Insert in the junction table
-        db.execute("INSERT INTO posts_tags (post_id, tag_id) VALUES (?, ?)", (post_id, tag["value"]))
+        db.execute(
+            "INSERT INTO posts_tags (post_id, tag_id) VALUES (?, ?)",
+            (post_id, tag["value"]),
+        )
 
-        
+
 def get_tags(post_id):
     db = get_db()
     tags = db.execute(
-        "SELECT name FROM tag WHERE id IN (SELECT tag_id FROM posts_tags WHERE post_id = ?)", (post_id,)
+        "SELECT name FROM tag WHERE id IN (SELECT tag_id FROM posts_tags WHERE post_id = ?)",
+        (post_id,),
     ).fetchall()
     tags = [tag["name"] for tag in tags]
     return tags
 
+
 def remove_tags(post_id):
     db = get_db()
-    db.execute(
-        "DELETE FROM posts_tags WHERE post_id = ?", (post_id,)
-    )
-    
+    db.execute("DELETE FROM posts_tags WHERE post_id = ?", (post_id,))
+
 
 @bp.route("/<tagname>/", methods=("GET",))
 def posts_by_tag(tagname):
@@ -65,8 +72,8 @@ def posts_by_tag(tagname):
         "SELECT COUNT(id) FROM post_info "
         "WHERE id IN "
         "(SELECT post_id FROM posts_tags WHERE tag_id = ?)",
-        (tag_id,)
-        ).fetchone()[0]
+        (tag_id,),
+    ).fetchone()[0]
     pagination = Pagination(page=page, total_items=total_items)
 
     posts = db.execute(
@@ -74,9 +81,9 @@ def posts_by_tag(tagname):
         "WHERE id IN "
         "(SELECT post_id FROM posts_tags WHERE tag_id = ?) "
         "LIMIT ? OFFSET ?",
-        (tag_id, pagination.per_page, pagination.offset)
-        ).fetchall()
-    
+        (tag_id, pagination.per_page, pagination.offset),
+    ).fetchall()
+
     if not posts:
         abort(404, f"No posts found for tag ({tagname})")
 
@@ -87,6 +94,21 @@ def posts_by_tag(tagname):
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
-        return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, reactions=reactions_dict, total_pages=pagination.total_pages, page=page, endpoint='tag.posts_by_tag')
+        return render_template(
+            "tag/posts_by_tag.html",
+            posts=posts,
+            tagname=tagname,
+            reactions=reactions_dict,
+            total_pages=pagination.total_pages,
+            page=page,
+            endpoint="tag.posts_by_tag",
+        )
 
-    return render_template("tag/posts_by_tag.html", posts=posts, tagname=tagname, page=page, total_pages=pagination.total_pages, endpoint='tag.posts_by_tag')
+    return render_template(
+        "tag/posts_by_tag.html",
+        posts=posts,
+        tagname=tagname,
+        page=page,
+        total_pages=pagination.total_pages,
+        endpoint="tag.posts_by_tag",
+    )

@@ -69,7 +69,14 @@ def test_create(client, auth, app):
     auth.login()
     assert client.get("/create").status_code == 200
     # Insert a new element in the post table
-    client.post("/create", data={"title": "created", "body": "hello there", "tags": '[{"value": "tag1"}, {"value": "tag2"}]'})
+    client.post(
+        "/create",
+        data={
+            "title": "created",
+            "body": "hello there",
+            "tags": '[{"value": "tag1"}, {"value": "tag2"}]',
+        },
+    )
 
     with app.app_context():
         db = get_db()
@@ -78,7 +85,12 @@ def test_create(client, auth, app):
         assert count == 2
 
     # New post with no tags
-    assert client.post("/create", data={"title": "created", "body": "hello there", "tags": ""}).status_code == 302
+    assert (
+        client.post(
+            "/create", data={"title": "created", "body": "hello there", "tags": ""}
+        ).status_code
+        == 302
+    )
 
 
 def test_update(client, auth, app):
@@ -94,7 +106,17 @@ def test_update(client, auth, app):
         assert post["title"] == "updated"
 
     # Update element with tags
-    assert client.post("/1/update", data={"title": "updated", "body": "", "tags": '[{"value": "tag1"}, {"value": "tag2"}]'}).status_code == 302
+    assert (
+        client.post(
+            "/1/update",
+            data={
+                "title": "updated",
+                "body": "",
+                "tags": '[{"value": "tag1"}, {"value": "tag2"}]',
+            },
+        ).status_code
+        == 302
+    )
 
 
 @pytest.mark.parametrize(

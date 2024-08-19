@@ -58,9 +58,11 @@ def create_app(test_config=None):  # factory function
     app.register_blueprint(comments.bp)
 
     from . import tag
+
     app.register_blueprint(tag.bp)
 
     from . import search
+
     app.register_blueprint(search.bp)
 
     return app

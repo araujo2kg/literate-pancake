@@ -1,5 +1,6 @@
 from flaskr.pagination import Pagination
 
+
 def test_pagination():
     pagination = Pagination(total_items=100)
     assert pagination.page == 1
