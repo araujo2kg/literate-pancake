@@ -1,4 +1,12 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
@@ -25,7 +33,8 @@ def index():
     # If user is logged, return their likes and dislikes too
     if g.user:
         reactions = db.execute(
-            "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
+            "SELECT post_id, reaction FROM reactions WHERE user_id = ?",
+            (g.user["id"],),
         )
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
@@ -147,7 +156,8 @@ def update(id):
             db = get_db()
             # Update post
             db.execute(
-                "UPDATE post SET title = ?, body = ?" " WHERE id= ?", (title, body, id)
+                "UPDATE post SET title = ?, body = ?" " WHERE id= ?",
+                (title, body, id),
             )
             # Remove previous tags
             remove_tags(id)
@@ -205,7 +215,9 @@ def post(id):
             tags=tags,
         )
 
-    return render_template("blog/post.html", post=post, comments=comments, tags=tags)
+    return render_template(
+        "blog/post.html", post=post, comments=comments, tags=tags
+    )
 
 
 @bp.route("/<int:reaction>/<int:post_id>/reaction", methods=("POST",))
@@ -226,7 +238,10 @@ def reaction(reaction, post_id):
 
     except sqlite3.IntegrityError:
         # If post does not exist
-        if db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone() == None:
+        if (
+            db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone()
+            == None
+        ):
             abort(404, "Invalid post")
 
         # Get existing reaction

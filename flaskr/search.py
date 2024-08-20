@@ -29,7 +29,8 @@ def search():
     # Get user reacions if logged in
     if g.user:
         reactions = db.execute(
-            "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
+            "SELECT post_id, reaction FROM reactions WHERE user_id = ?",
+            (g.user["id"],),
         )
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions

@@ -1,9 +1,15 @@
 <div class="pagination">
-    {% if page > 1 %}
-        <a href="{{ url_for(endpoint, page=page-1, q=q if q else None, tagname=tagname if tagname else None) }}">Previous</a>
-    {% endif %}
-    <span>Page {{page}} of {{total_pages}}</span>
-    {% if page < total_pages %}
-        <a href="{{ url_for(endpoint, page=page+1, q=q if q else None, tagname=tagname if tagname else None) }}">Next</a>
-    {% endif %}
+	{% if page > 1 %}
+	<a
+		href="{{ url_for(endpoint, page=page-1, q=q if q else None, tagname=tagname if tagname else None) }}"
+		>Previous</a
+	>
+	{% endif %}
+	<span>Page {{page}} of {{total_pages}}</span>
+	{% if page < total_pages %}
+	<a
+		href="{{ url_for(endpoint, page=page+1, q=q if q else None, tagname=tagname if tagname else None) }}"
+		>Next</a
+	>
+	{% endif %}
 </div>

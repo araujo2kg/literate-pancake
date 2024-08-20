@@ -52,7 +52,9 @@ def get_comments(post):
 @login_required
 def update(id):
     db = get_db()
-    comment = db.execute("SELECT * FROM comments WHERE id = ?", (id,)).fetchone()
+    comment = db.execute(
+        "SELECT * FROM comments WHERE id = ?", (id,)
+    ).fetchone()
 
     if comment is None:
         return "Comment does not exist."
@@ -82,7 +84,9 @@ def update(id):
 @login_required
 def delete(id):
     db = get_db()
-    comment = db.execute("SELECT * FROM comments WHERE id = ?", (id,)).fetchone()
+    comment = db.execute(
+        "SELECT * FROM comments WHERE id = ?", (id,)
+    ).fetchone()
 
     if comment is None:
         return abort(404, "Comment not found.")

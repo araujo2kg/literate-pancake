@@ -90,7 +90,9 @@ def load_logged_in_user():
     else:
         # This  will be accessible in every view with g.user['key']
         g.user = (
-            get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
+            get_db()
+            .execute("SELECT * FROM user WHERE id = ?", (user_id,))
+            .fetchone()
         )
 
 

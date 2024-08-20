@@ -12,6 +12,7 @@ def create_app(test_config=None):  # factory function
         DATABASE=os.path.join(
             app.instance_path, "flaskr.sqlite"
         ),  # path to sqlite database file
+        IMAGES_DIR=os.path.join(app.instance_path, "images"),
     )
 
     if test_config is None:
@@ -28,6 +29,12 @@ def create_app(test_config=None):  # factory function
         os.makedirs(
             app.instance_path
         )  # creates the instance folder if does not exists, will be storing the database file
+    except OSError:
+        pass
+
+    # ensure image folder exists
+    try:
+        os.makedirs(app.config["IMAGES_DIR"])
     except OSError:
         pass
 
@@ -50,9 +57,8 @@ def create_app(test_config=None):  # factory function
     from . import blog
 
     app.register_blueprint(blog.bp)
-
-    # Refers to the index view in the blog bp
     app.add_url_rule("/", endpoint="index")
+
     from . import comments
 
     app.register_blueprint(comments.bp)
@@ -64,5 +70,9 @@ def create_app(test_config=None):  # factory function
     from . import search
 
     app.register_blueprint(search.bp)
+
+    from . import image
+
+    app.register_blueprint(image.bp)
 
     return app

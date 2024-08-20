@@ -1,36 +1,53 @@
-{% extends "base.html" %}
-
-{% block header %}
+{% extends "base.html" %} {% block header %}
 <h1>{% block title %}{{ post['title'] }}{% endblock %}</h1>
-<div class="about" style="color: gray">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-{% endblock %}
-
-{% block content %}
+<div class="about" style="color: gray">
+	by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}
+</div>
+{% endblock %} {% block content %}
 <article>
-    <p class="post-body">{{ post['body']}}</p>
+	<p class="post-body">{{ post['body']}}</p>
 </article>
 {% if g.user['id'] == post['author_id'] %}
 <div class="post-buttons">
-    <a href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+	<a href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
 </div>
 {% endif %}
 <div class="reactions">
-    <form class="reaction-form"  action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}" method="post">
-        <input data-button-id="{{ post['id'] }}" class="like-button {% if g.user['id'] %} {{ 'activated-like' if reaction[post['id']] == 0 }} {% endif %}" type="submit" value="Like | {{ post['likes'] }}">
-    </form>
-    <form class="reaction-form" action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}" method="post">
-        <input data-button-id="{{ post['id'] }}" class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reaction[post['id']] == 1 }} {% endif %}" type="submit" value="Dislike | {{ post['dislikes'] }}">
-    </form>
+	<form
+		class="reaction-form"
+		action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}"
+		method="post"
+	>
+		<input
+			data-button-id="{{ post['id'] }}"
+			class="like-button {% if g.user['id'] %} {{ 'activated-like' if reaction[post['id']] == 0 }} {% endif %}"
+			type="submit"
+			value="Like | {{ post['likes'] }}"
+		/>
+	</form>
+	<form
+		class="reaction-form"
+		action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}"
+		method="post"
+	>
+		<input
+			data-button-id="{{ post['id'] }}"
+			class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reaction[post['id']] == 1 }} {% endif %}"
+			type="submit"
+			value="Dislike | {{ post['dislikes'] }}"
+		/>
+	</form>
 </div>
 <div>
-{% include "comments/comment-form.html" %}
-{% for tag in tags %}
-&nbsp;<a href="/tag/{{ tag|urlencode }}/">#{{ tag }}</a>
-{% endfor %}
+	{% include "comments/comment-form.html" %} {% for tag in tags %} &nbsp;<a
+		href="/tag/{{ tag|urlencode }}/"
+		>#{{ tag }}</a
+	>
+	{% endfor %}
 </div>
-<hr>
-<h1 style="text-align: center;">Comments</h1>
-<hr>
+<hr />
+<h1 style="text-align: center">Comments</h1>
+<hr />
 {% include "comments/comment-list.html" %}
 <script src="{{ url_for('static', filename='reactions.js') }}"></script>
 <script src="{{ url_for('static', filename='comments.js') }}"></script>

@@ -1,37 +1,43 @@
-{% extends 'base.html' %}
-
-{% block head %}
-{% include "tag/tagify.html" %}
-{% endblock %}
-
-{% block header %}
+{% extends 'base.html' %} {% block head %} {% include "tag/tagify.html" %} {%
+endblock %} {% block header %}
 <h1>{% block title %}Edit "{{ post['title'] }}"{% endblock %}</h1>
-{% endblock %}
-
-{% block content %}
-    <!-- When the action parameter is omitted, the default is the url/page itself -->
-    <form method="post">
-        <label for="title">Title</label>
-        <!-- The request object will be accessible in the server response to the post request,
+{% endblock %} {% block content %}
+<!-- When the action parameter is omitted, the default is the url/page itself -->
+<form method="post">
+	<label for="title">Title</label>
+	<!-- The request object will be accessible in the server response to the post request,
             so it can be used to restore the data to the state the user sended them -->
-        <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required autofocus>
-        <label for="body">Body</label>
-        <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-        <label for="tags">Tags</label>
-        <input name="tags" id="tags">
-        <input type="submit" value="Save">
-    </form>
-    <hr>
-    <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
-        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-    </form>
-    <script>
-        var input = document.querySelector('input[name=tags]');
-        var tagify = new Tagify(input, {
-            delimiters: " ",
-            maxTags: 10,
-        })
-        var post_tags = JSON.parse('{{ tags | tojson | safe }}');
-        tagify.addTags(post_tags)
-    </script>
+	<input
+		name="title"
+		id="title"
+		value="{{ request.form['title'] or post['title'] }}"
+		required
+		autofocus
+	/>
+	<label for="body">Body</label>
+	<textarea name="body" id="body">
+{{ request.form['body'] or post['body'] }}</textarea
+	>
+	<label for="tags">Tags</label>
+	<input name="tags" id="tags" />
+	<input type="submit" value="Save" />
+</form>
+<hr />
+<form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+	<input
+		class="danger"
+		type="submit"
+		value="Delete"
+		onclick="return confirm('Are you sure?');"
+	/>
+</form>
+<script>
+	var input = document.querySelector("input[name=tags]");
+	var tagify = new Tagify(input, {
+		delimiters: " ",
+		maxTags: 10,
+	});
+	var post_tags = JSON.parse("{{ tags | tojson | safe }}");
+	tagify.addTags(post_tags);
+</script>
 {% endblock %}

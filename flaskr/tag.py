@@ -28,7 +28,10 @@ def link_tags(post_id, tags):
     # get the tags ids and insert in the junction table
     db = get_db()
     # Make sure the post exist
-    if db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone() is None:
+    if (
+        db.execute("SELECT * FROM post WHERE id = ?", (post_id,)).fetchone()
+        is None
+    ):
         return "Invalid post."
     for tag in tags:
         # Get tags ids
@@ -63,7 +66,9 @@ def posts_by_tag(tagname):
     error = None
     page = request.args.get("page", 1, type=int)
 
-    tag_id = db.execute("SELECT id FROM tag WHERE name = ?", (tagname,)).fetchone()
+    tag_id = db.execute(
+        "SELECT id FROM tag WHERE name = ?", (tagname,)
+    ).fetchone()
     if tag_id is None:
         abort(404, f"Tag ({tagname}) not found.")
     tag_id = tag_id[0]
@@ -89,7 +94,8 @@ def posts_by_tag(tagname):
 
     if g.user:
         reactions = db.execute(
-            "SELECT post_id, reaction FROM reactions WHERE user_id = ?", (g.user["id"],)
+            "SELECT post_id, reaction FROM reactions WHERE user_id = ?",
+            (g.user["id"],),
         )
         reactions_dict = {
             reaction["post_id"]: reaction["reaction"] for reaction in reactions

@@ -1,2 +1,3 @@
 # literate-pancake
-basic blog application with flask 
+
+basic blog application with flask
