@@ -1,5 +1,6 @@
 DROP VIEW IF EXISTS post_info;
 DROP TABLE IF EXISTS posts_tags;
+DROP TABLE IF EXISTS post_image;
 DROP TABLE IF EXISTS reactions;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS tag;
@@ -54,6 +55,12 @@ CREATE TABLE posts_tags (
     PRIMARY KEY (post_id, tag_id)
 );
 
+CREATE TABLE post_image (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    imagename TEXT NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES post (id)
+)
 
 CREATE VIEW post_info AS
 SELECT post.id, post.author_id, post.created, post.title, post.body, user.username,
