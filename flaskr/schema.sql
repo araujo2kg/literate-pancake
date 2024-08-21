@@ -62,7 +62,7 @@ GROUP_CONCAT(tag.name) as tag_names,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 1) as dislikes
 FROM post 
 JOIN user ON post.author_id = user.id
-JOIN posts_tags ON post.id = posts_tags.post_id
-JOIN tag ON posts_tags.tag_id = tag.id
+LEFT JOIN posts_tags ON post.id = posts_tags.post_id
+LEFT JOIN tag ON posts_tags.tag_id = tag.id
 GROUP BY post.id
 ORDER BY created DESC;
