@@ -1,66 +1,76 @@
-{% extends 'base.html' %} {% block header %}
-<h1>{% block title %}Posts{% endblock %}</h1>
-{% if g.user %}
-<a class="action" href="{{ url_for('blog.create') }}">New</a>
-{% endif %} {% endblock %} {% block content %} {% for post in posts %}
-<article class="post">
-	<header>
-		<div>
-			<h1>
-				<a
-					class="post-title"
-					href="{{ url_for('blog.post', id=post['id']) }}"
-					>{{ post['title'] }}</a
+{% extends 'base.html' %}
+{% block header %}
+	<h1>{% block title %}Posts{% endblock %}</h1>
+	{% if g.user %}
+		<a class="action" href="{{ url_for('blog.create') }}">New</a>
+	{% endif %}
+{% endblock %}
+{% block content %}
+	{% for post in posts %}
+		<article class="post">
+			<header>
+				<div>
+					<h1>
+						<a
+							class="post-title"
+							href="{{ url_for('blog.post', id=post['id']) }}"
+							>{{ post['title'] }}</a
+						>
+					</h1>
+					<div class="about">
+						by {{ post['username'] }} on
+						{{ post['created'].strftime('%Y-%m-%d') }}
+					</div>
+				</div>
+				{% if g.user['id'] == post['author_id'] %}
+					<!-- This url_for is passing the post id to the update view, which receives it as an argument ('/<int:id>/update') -->
+					<a
+						class="action"
+						href="{{ url_for('blog.update', id=post['id']) }}"
+						>Edit</a
+					>
+				{% endif %}
+			</header>
+			<p class="body">{{ post['body'] }}</p>
+			<div class="reactions">
+				<form
+					class="reaction-form"
+					action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}"
+					method="post"
 				>
-			</h1>
-			<div class="about">
-				by {{ post['username'] }} on {{
-				post['created'].strftime('%Y-%m-%d') }}
+					<input
+						data-button-id="{{ post['id'] }}"
+						class="like-button {% if g.user['id'] %}{{ 'activated-like' if reactions[post['id']] == 0 }}{% endif %}"
+						type="submit"
+						value="Like | {{ post['likes'] }}"
+					/>
+				</form>
+				<form
+					class="reaction-form"
+					action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}"
+					method="post"
+				>
+					<input
+						data-button-id="{{ post['id'] }}"
+						class="dislike-button {% if g.user['id'] %}{{ 'activated-dislike' if reactions[post['id']] == 1 }}{% endif %}"
+						type="submit"
+						value="Dislike | {{ post['dislikes'] }}"
+					/>
+				</form>
 			</div>
-		</div>
-		{% if g.user['id'] == post['author_id'] %}
-		<!-- This url_for is passing the post id to the update view, which receives it as an argument ('/<int:id>/update') -->
-		<a class="action" href="{{ url_for('blog.update', id=post['id']) }}"
-			>Edit</a
-		>
+			{% include 'comments/comment-form.html' %}
+			{%
+				for tag in
+				post.tag_names.split(',')
+			%}
+				&nbsp;<a href="/tag/{{ tag|urlencode }}/">#{{ tag }}</a>
+			{% endfor %}
+		</article>
+		{% if not loop.last %}
+			<hr />
 		{% endif %}
-	</header>
-	<p class="body">{{ post['body'] }}</p>
-	<div class="reactions">
-		<form
-			class="reaction-form"
-			action="{{ url_for('blog.reaction', reaction=0, post_id=post['id']) }}"
-			method="post"
-		>
-			<input
-				data-button-id="{{ post['id'] }}"
-				class="like-button {% if g.user['id'] %} {{ 'activated-like' if reactions[post['id']] == 0 }} {% endif %}"
-				type="submit"
-				value="Like | {{ post['likes'] }}"
-			/>
-		</form>
-		<form
-			class="reaction-form"
-			action="{{ url_for('blog.reaction', reaction=1, post_id=post['id']) }}"
-			method="post"
-		>
-			<input
-				data-button-id="{{ post['id'] }}"
-				class="dislike-button {% if g.user['id'] %} {{ 'activated-dislike' if reactions[post['id']] == 1 }} {% endif %}"
-				type="submit"
-				value="Dislike | {{ post['dislikes'] }}"
-			/>
-		</form>
-	</div>
-	{% include 'comments/comment-form.html' %} {% for tag in
-	post.tag_names.split(',') %} &nbsp;<a href="/tag/{{ tag|urlencode }}/"
-		>#{{ tag }}</a
-	>
 	{% endfor %}
-</article>
-{% if not loop.last %}
-<hr />
-{% endif %} {% endfor %} {% include 'pagination/pagination.html' %}
-<script src="{{ url_for('static', filename='reactions.js') }}"></script>
-<script src="{{ url_for('static', filename='comments.js') }}"></script>
+	{% include 'pagination/pagination.html' %}
+	<script src="{{ url_for('static', filename='reactions.js') }}"></script>
+	<script src="{{ url_for('static', filename='comments.js') }}"></script>
 {% endblock %}
