@@ -13,6 +13,7 @@ from flaskr.db import get_db
 from flaskr.comments import get_comments
 from flaskr.tag import treat_tags, create_tags, link_tags, get_tags, remove_tags
 from flaskr.pagination import Pagination
+from flaskr.image import create_image_name, save_image, create_image_connection
 import json
 import sqlite3
 
@@ -65,6 +66,7 @@ def create():
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
+        image = request.files.get("image")
         error = None
 
         # Tagify returns json string
@@ -90,10 +92,19 @@ def create():
                 "INSERT INTO post (title, body, author_id)" " VALUES (?, ?, ?)",
                 (title, body, g.user["id"]),
             )
+            post_id = result.lastrowid
             # If tags were provided, insert in the junction table
             if tags is not None:
-                post_id = result.lastrowid
                 link_tags(post_id, tags)
+            # If image was provided, save it and insert in the junction table
+            if image:
+                # If file is not image, returns none
+                imagename = create_image_name(image)
+                if imagename is not None:
+                    save_image(image, imagename)
+                    create_image_connection(post_id, imagename)
+                    
+                
             db.commit()
             return redirect(url_for("blog.index"))
 
@@ -192,10 +203,9 @@ def delete(id):
 
 @bp.route("/<int:id>/post", methods=("GET",))
 def post(id):
-    # get_post checks if logged in user is the author by default, so we need to pass the false as arg
-    post = get_post(id, check_author=False)
+    db = get_db()
+    post = db.execute("SELECT * FROM post_info WHERE id = ?", (id,)).fetchone()
     comments = get_comments(id)
-    tags = get_tags(id)
 
     # If user is logged, return their reaction to the post
     if g.user:
@@ -212,11 +222,10 @@ def post(id):
             post=post,
             reaction=reaction_dict,
             comments=comments,
-            tags=tags,
         )
 
     return render_template(
-        "blog/post.html", post=post, comments=comments, tags=tags
+        "blog/post.html", post=post, comments=comments
     )
 
 

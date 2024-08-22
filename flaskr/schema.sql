@@ -60,10 +60,10 @@ CREATE TABLE post_image (
     post_id INTEGER NOT NULL,
     imagename TEXT NOT NULL,
     FOREIGN KEY (post_id) REFERENCES post (id)
-)
+);
 
 CREATE VIEW post_info AS
-SELECT post.id, post.author_id, post.created, post.title, post.body, user.username,
+SELECT post.id, post.author_id, post.created, post.title, post.body, user.username, post_image.imagename,
 GROUP_CONCAT(tag.name) as tag_names,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 0) as likes,
 (SELECT COUNT(reaction) FROM reactions WHERE post_id = post.id AND reaction = 1) as dislikes
@@ -71,5 +71,6 @@ FROM post
 JOIN user ON post.author_id = user.id
 LEFT JOIN posts_tags ON post.id = posts_tags.post_id
 LEFT JOIN tag ON posts_tags.tag_id = tag.id
+LEFT JOIN post_image ON post.id = post_image.post_id
 GROUP BY post.id
 ORDER BY created DESC;

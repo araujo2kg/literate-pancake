@@ -14,6 +14,8 @@ def get_image(imagename):
 
 
 def create_image_name(image):
+    if image.content_type not in ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/avif']:
+        return None
     imagename = image.filename
     extension = os.path.splitext(imagename)[1]
     imagename = f"{uuid.uuid4()}{extension}"
@@ -25,6 +27,6 @@ def save_image(image, imagename):
 
 
 def create_image_connection(post_id, imagename):
-    db = get_db
+    db = get_db()
     db.execute("INSERT INTO post_image (post_id, imagename) VALUES (?, ?)", (post_id, imagename))
     db.commit()

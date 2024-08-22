@@ -248,3 +248,14 @@ nav ul li {
 	text-align: center;
 	padding-top: 50px;
 }
+
+.post-image {
+	width: 500px;
+	height: 800%;
+	border-radius: 10px;
+	transition: transform 0.3s ease;
+}
+.post-image:hover {
+	transform: scale(1.05);
+	z-index: 10;
+}

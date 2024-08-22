@@ -20,7 +20,6 @@
 					</div>
 				</div>
 				{% if g.user['id'] == post['author_id'] %}
-					<!-- This url_for is passing the post id to the update view, which receives it as an argument ('/<int:id>/update') -->
 					<a
 						class="action"
 						href="{{ url_for('blog.update', id=post['id']) }}"
@@ -29,6 +28,12 @@
 				{% endif %}
 			</header>
 			<p class="body">{{ post['body'] }}</p>
+			{% if post.imagename %}
+				<img
+					src="{{ url_for('image.get_image', imagename=post.imagename) }}"
+					class="post-image"
+				/>
+			{% endif %}
 			<div class="reactions">
 				<form
 					class="reaction-form"

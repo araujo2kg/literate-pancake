@@ -8,6 +8,12 @@
 {% block content %}
 	<article>
 		<p class="post-body">{{ post['body'] }}</p>
+		{% if post.imagename %}
+			<img
+				src="{{ url_for('image.get_image', imagename=post.imagename) }}"
+				class="post-image"
+			/>
+		{% endif %}
 	</article>
 	{% if g.user['id'] == post['author_id'] %}
 		<div class="post-buttons">
@@ -42,9 +48,11 @@
 	</div>
 	<div>
 		{% include "comments/comment-form.html" %}
-		{% for tag in tags %}
-			&nbsp;<a href="/tag/{{ tag|urlencode }}/">#{{ tag }}</a>
-		{% endfor %}
+		{% if post.tag_names %}
+			{% for tag in post.tag_names.split(',') %}
+				&nbsp;<a href="/tag/{{ tag|urlencode }}/">#{{ tag }}</a>
+			{% endfor %}
+		{% endif %}
 	</div>
 	<hr />
 	<h1 style="text-align: center">Comments</h1>
