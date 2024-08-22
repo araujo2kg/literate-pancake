@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 	<!-- When the action parameter is omitted, the default is the url/page itself -->
-	<form method="post">
+	<form method="post" enctype="multipart/form-data">
 		<label for="title">Title</label>
 		<!-- The request object will be accessible in the server response to the post request,
             so it can be used to restore the data to the state the user sended them -->
@@ -22,7 +22,17 @@
 		<textarea name="body" id="body">
 {{ request.form['body'] or post['body'] }}</textarea
 		>
-		<label for="tags">Tags</label>
+		{% if image %}
+			<img
+				src="{{ url_for('image.get_image', imagename=image['imagename']) }}"
+				alt="Current Image"
+				style="width:150px; height:85px;"
+			/>
+		{% endif %}
+		<label for="image">New Image <small>(Optional)</small></label>
+		<input name="image" id="image" type="file" />
+
+		<label for="tags">Tags <small>(Optional)</small></label>
 		<input name="tags" id="tags" />
 		<input type="submit" value="Save" />
 	</form>
@@ -41,7 +51,8 @@
 			delimiters: " ",
 			maxTags: 10,
 		});
-		var post_tags = JSON.parse("{{ tags | tojson | safe }}");
+		// prettier-ignore
+		var post_tags = JSON.parse('{{ tags | tojson | safe }}');
 		tagify.addTags(post_tags);
 	</script>
 {% endblock %}

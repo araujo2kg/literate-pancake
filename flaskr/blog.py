@@ -140,14 +140,21 @@ def get_post(id, check_author=True):
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
-    # The get_post check if the user is the author of the post
-    post = get_post(id)
+    db = get_db()
+    post = db.execute("SELECT * FROM post_info WHERE id = ?", (id,)).fetchone()
+    # Check if user is the author of the post
+    if post["author_id"] != g.user["id"]:
+        abort(403)
+
     tags = get_tags(id)
+    image = db.execute("SELECT * FROM post_image WHERE post_id = ?", (id,)).fetchone()
 
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
         error = None
+        # If blank, returns an empty fileobject
+        image = request.files.get("image")
 
         # Tagify tags in json format
         tags = request.form.get("tags")
@@ -175,10 +182,13 @@ def update(id):
             # Update tags
             if tags is not None:
                 link_tags(id, tags)
+            # Update image
+            if image and image.filename != '':
+                pass
             db.commit()
             return redirect(url_for("blog.index"))
 
-    return render_template("blog/update.html", post=post, tags=tags)
+    return render_template("blog/update.html", post=post, tags=tags, image=image)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
