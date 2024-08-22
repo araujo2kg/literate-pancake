@@ -6,6 +6,7 @@ from flask import (
     render_template,
     request,
     url_for,
+    current_app
 )
 from werkzeug.exceptions import abort
 from flaskr.auth import login_required
@@ -13,9 +14,10 @@ from flaskr.db import get_db
 from flaskr.comments import get_comments
 from flaskr.tag import treat_tags, create_tags, link_tags, get_tags, remove_tags
 from flaskr.pagination import Pagination
-from flaskr.image import create_image_name, save_image, create_image_connection
+from flaskr.image import create_image_name, save_image, delete_image, create_image_connection
 import json
 import sqlite3
+import os
 
 bp = Blueprint("blog", __name__)
 
@@ -147,14 +149,14 @@ def update(id):
         abort(403)
 
     tags = get_tags(id)
-    image = db.execute("SELECT * FROM post_image WHERE post_id = ?", (id,)).fetchone()
+    current_image = db.execute("SELECT * FROM post_image WHERE post_id = ?", (id,)).fetchone()
 
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
         error = None
         # If blank, returns an empty fileobject
-        image = request.files.get("image")
+        new_image = request.files.get("image")
 
         # Tagify tags in json format
         tags = request.form.get("tags")
@@ -183,12 +185,23 @@ def update(id):
             if tags is not None:
                 link_tags(id, tags)
             # Update image
-            if image and image.filename != '':
-                pass
+            if new_image and new_image.filename != '':
+                # Add new image to folder
+                imagename = create_image_name(new_image)
+                save_image(new_image, imagename)
+                # Update
+                if current_image:
+                    # Delete current image from folder
+                    delete_image(current_image["imagename"])
+                    # Update the connection
+                    db.execute("UPDATE post_image SET imagename = ? WHERE imagename = ?", (imagename, current_image["imagename"]))
+                # Create
+                else:
+                    create_image_connection(id, imagename)
             db.commit()
             return redirect(url_for("blog.index"))
 
-    return render_template("blog/update.html", post=post, tags=tags, image=image)
+    return render_template("blog/update.html", post=post, tags=tags, image=current_image)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

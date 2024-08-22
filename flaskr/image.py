@@ -26,6 +26,8 @@ def create_image_name(image):
 def save_image(image, imagename):
     image.save(os.path.join(current_app.config["IMAGES_DIR"], imagename))
 
+def delete_image(imagename):
+    os.remove(os.path.join(current_app.config["IMAGES_DIR"], imagename))
 
 def create_image_connection(post_id, imagename):
     db = get_db()
