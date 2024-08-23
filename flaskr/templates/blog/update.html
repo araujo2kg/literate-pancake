@@ -39,6 +39,11 @@
 	<hr />
 	<form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
 		<input
+			type="hidden"
+			name="imagename"
+			value="{{ image['imagename'] if image else '' }}"
+		/>
+		<input
 			class="danger"
 			type="submit"
 			value="Delete"

@@ -209,6 +209,7 @@ def update(id):
 def delete(id):
     # Get post checks if the logged user is the author
     get_post(id)
+    imagename = request.form.get("imagename")
     db = get_db()
     # Delete all the reactions from the reaction table related to this post
     db.execute("DELETE FROM reactions WHERE post_id = ?", (id,))
@@ -216,6 +217,10 @@ def delete(id):
     db.execute("DELETE FROM comments WHERE post_id = ?", (id,))
     # Delete the tags
     db.execute("DELETE FROM posts_tags WHERE post_id = ?", (id,))
+    # Delete the image connection and the image file
+    if imagename:
+        db.execute("DELETE FROM post_image WHERE post_id = ?", (id,))
+        delete_image(imagename)
     # Delete the post
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
