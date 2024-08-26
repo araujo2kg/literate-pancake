@@ -8,8 +8,10 @@ it too should be used to define setup and teardown methods
 import os
 import tempfile
 import pytest
+import shutil
 from flaskr import create_app
 from flaskr.db import get_db, init_db
+from PIL import Image
 
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
     _data_sql = f.read().decode("utf8")
@@ -19,12 +21,15 @@ with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
 @pytest.fixture
 def app():
     db_fd, db_path = tempfile.mkstemp()
+    # Temporary directory
+    img_path = tempfile.mkdtemp()
 
     # as configured in the froundy, when the config is passed to create_app, it runs it, in this is instanciating the app in test mode
     app = create_app(
         {
             "TESTING": True,
             "DATABASE": db_path,
+            "IMAGES_DIR": img_path,
         }
     )
 
@@ -32,11 +37,17 @@ def app():
         init_db()
         get_db().executescript(_data_sql)
 
+        # Insert an image in the temporary img directory
+        image_path = os.path.join(img_path, "test.png")
+        image = Image.new("RGB", (100, 100), color="red")
+        image.save(image_path)
+
     yield app
 
-    # Used to cleanup the temp file after the test is done
+    # Used to cleanup the temp files after the test is done
     os.close(db_fd)
     os.unlink(db_path)
+    shutil.rmtree(img_path)
 
 
 # test_client() is a default method of the flask app testing utilities, used to simulate http requests without a server
@@ -73,3 +84,8 @@ class AuthActions(object):
 @pytest.fixture
 def auth(client):
     return AuthActions(client)
+
+
+@pytest.fixture
+def setup_image():
+    pass

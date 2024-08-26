@@ -144,7 +144,9 @@ def get_post(id, check_author=True):
 def update(id):
     db = get_db()
     post = db.execute("SELECT * FROM post_info WHERE id = ?", (id,)).fetchone()
-    # Check if user is the author of the post
+
+    if post is None:
+        abort(404, f"Post id {id} doesn't exist.")
     if post["author_id"] != g.user["id"]:
         abort(403)
 

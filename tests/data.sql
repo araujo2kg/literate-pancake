@@ -22,3 +22,7 @@ VALUES
 INSERT INTO posts_tags (post_id, tag_id)
 VALUES
   (1, 1);
+
+INSERT INTO post_image (post_id, imagename)
+VALUES
+  (1, "test.png")
