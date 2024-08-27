@@ -36,6 +36,9 @@ def test_delete_image(app):
         assert os.path.exists(image_path) == True
         delete_image("test.png")
         assert os.path.exists(image_path) == False
+        # No image
+        response = delete_image("no_image")
+        assert response == 1
     
 
 def test_create_image_connection(app):

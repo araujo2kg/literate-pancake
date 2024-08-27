@@ -1,5 +1,6 @@
 import pytest
 from flaskr.db import get_db
+from werkzeug.datastructures import FileStorage
 
 
 # If the user os logged in or not the content displayed on index is different
@@ -65,7 +66,7 @@ def test_exists_required(client, auth, path):
     assert client.post(path).status_code == 404
 
 
-def test_create(client, auth, app):
+def test_create(client, auth, app, setup_image):
     auth.login()
     assert client.get("/create").status_code == 200
     # Insert a new element in the post table
@@ -75,6 +76,17 @@ def test_create(client, auth, app):
             "title": "created",
             "body": "hello there",
             "tags": '[{"value": "tag1"}, {"value": "tag2"}]',
+            "image": setup_image,
+        },
+    )
+    # New post with invalid file format
+    client.post(
+        "/create",
+        data={
+            "title": "created",
+            "body": "hello there",
+            "tags": '[{"value": "tag1"}, {"value": "tag2"}]',
+            "image": FileStorage(filename="test.txt", content_type="text/HTML"),
         },
     )
 
@@ -82,7 +94,7 @@ def test_create(client, auth, app):
         db = get_db()
         # Check if the new row was added (test post table contains 1 registry)
         count = db.execute("SELECT COUNT(id) FROM post").fetchone()[0]
-        assert count == 2
+        assert count == 3
 
     # New post with no tags
     assert (
@@ -93,11 +105,11 @@ def test_create(client, auth, app):
     )
 
 
-def test_update(client, auth, app):
+def test_update(client, auth, app, setup_image):
     auth.login()
     assert client.get("/1/update").status_code == 200
     # Update the element in the post table (1)
-    client.post("/1/update", data={"title": "updated", "body": "", "tags": ""})
+    client.post("/1/update", data={"title": "updated", "body": "", "tags": "", "image": setup_image})
 
     with app.app_context():
         db = get_db()
@@ -117,6 +129,22 @@ def test_update(client, auth, app):
         ).status_code
         == 302
     )
+
+    
+def test_update_noimage(client, setup_image, app, auth):
+    auth.login()
+    # Update post without image, adding image
+    # Create the post
+    client.post("/create", data={"title": "no image", "body": "testing", "tags": ""})
+    # Update it adding image
+    response = client.post("/2/update", data={"title": "add image", "body": "testing", "tags": "", "image": setup_image})
+    assert response.status_code == 302
+
+    with app.app_context():
+        db = get_db()
+        response = db.execute("SELECT COUNT(id) FROM post_image").fetchone()[0]
+        assert response == 2
+
 
 
 @pytest.mark.parametrize(
