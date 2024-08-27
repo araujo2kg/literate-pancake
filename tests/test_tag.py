@@ -68,7 +68,6 @@ def test_posts_by_tag(client, auth, app):
 
     # Tag exists but there are not posts with it
     with app.app_context():
-        db = get_db()
-        client.post("/1/delete")
+        client.post("/1/delete", data={"imagename": "test.png"})
         response = client.get("/tag/tagname/")
         assert b"No posts found for tag" in response.data

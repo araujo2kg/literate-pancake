@@ -12,6 +12,7 @@ import shutil
 from flaskr import create_app
 from flaskr.db import get_db, init_db
 from PIL import Image
+from werkzeug.datastructures import FileStorage
 
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
     _data_sql = f.read().decode("utf8")
@@ -87,5 +88,9 @@ def auth(client):
 
 
 @pytest.fixture
-def setup_image():
-    pass
+def setup_image(app):
+    f = open(os.path.join(app.config["IMAGES_DIR"], "test.png"), "rb") 
+    yield FileStorage(stream=f, filename="test.png", content_type="image/png")
+    f.close()
+
+

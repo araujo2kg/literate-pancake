@@ -135,18 +135,20 @@ def test_create_update_validate(client, auth, path):
 def test_delete(client, auth, app):
     auth.login()
     # Post to delete view, that should remove the /1/ post&reactions&comments and redirect to index
-    response = client.post("/1/delete")
+    response = client.post("/1/delete", data={"imagename": "test.png"})
     assert response.headers["Location"] == "/"
 
-    # Checks if post, reactions and comments were deleted
+    # Checks if post, reactions, comments and image were deleted
     with app.app_context():
         db = get_db()
         reactions = db.execute("SELECT * FROM reactions WHERE post_id = 1").fetchone()
         comments = db.execute("SELECT * FROM comments WHERE post_id = 1").fetchone()
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
+        image = db.execute("SELECT * FROM post_image WHERE id = 1").fetchone()
         assert post is None
         assert reactions is None
         assert comments is None
+        assert image is None
 
 
 def test_post(client, auth):
