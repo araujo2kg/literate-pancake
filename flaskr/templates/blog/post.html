@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 	<article>
-		<p class="post-body">{{ post['body'] }}</p>
+		<p class="post-body">{{ post['body'] | markdown | safe }}</p>
 		{% if post.imagename %}
 			<img
 				src="{{ url_for('image.get_image', imagename=post.imagename) }}"

@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from markdown import markdown
 
 
 # create and configure the app
@@ -38,6 +39,11 @@ def create_app(test_config=None):  # factory function
     except OSError:
         pass
 
+    # Jinja filter
+    @app.template_filter("markdown")
+    def markdown_filter(text):
+        return markdown(text)
+    
     # test page
     @app.route("/hello")
     def hello():

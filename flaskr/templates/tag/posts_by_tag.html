@@ -27,7 +27,7 @@
 					>
 				{% endif %}
 			</header>
-			<p class="body">{{ post['body'] }}</p>
+			<p class="body">{{ post['body'] | markdown | safe }}</p>
 			{% if post.imagename %}
 				<img
 					src="{{ url_for('image.get_image', imagename=post.imagename) }}"
