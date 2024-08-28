@@ -17,7 +17,7 @@ h4,
 h5,
 h6 {
 	font-family: serif;
-	color: #377ba8;
+	color: gray;
 	margin: 1rem 0;
 }
 
@@ -258,4 +258,12 @@ nav ul li {
 .post-image:hover {
 	transform: scale(1.05);
 	z-index: 10;
+}
+
+.headers {
+	color: #377ba8 !important;
+}
+
+.headers a {
+	color: #377ba8 !important;
 }

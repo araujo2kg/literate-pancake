@@ -101,20 +101,20 @@ def posts_by_tag(tagname):
             reaction["post_id"]: reaction["reaction"] for reaction in reactions
         }
         return render_template(
-            "tag/posts_by_tag.html",
+            "blog/index.html",
             posts=posts,
             tagname=tagname,
             reactions=reactions_dict,
             total_pages=pagination.total_pages,
             page=page,
-            endpoint="tag.posts_by_tag",
+            endpoint="blog.index",
         )
 
     return render_template(
-        "tag/posts_by_tag.html",
+        "blog/index.html",
         posts=posts,
         tagname=tagname,
         page=page,
         total_pages=pagination.total_pages,
-        endpoint="tag.posts_by_tag",
+        endpoint="blog.index",
     )

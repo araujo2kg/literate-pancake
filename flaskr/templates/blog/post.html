@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block header %}
-	<h1>{% block title %}{{ post['title'] }}{% endblock %}</h1>
+	<h1 class="headers">{% block title %}{{ post['title'] }}{% endblock %}</h1>
 	<div class="about" style="color: gray">
 		by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}
 	</div>
@@ -55,7 +55,7 @@
 		{% endif %}
 	</div>
 	<hr />
-	<h1 style="text-align: center">Comments</h1>
+	<h1 class="headers" style="text-align: center">Comments</h1>
 	<hr />
 	{% include "comments/comment-list.html" %}
 	<script src="{{ url_for('static', filename='reactions.js') }}"></script>
