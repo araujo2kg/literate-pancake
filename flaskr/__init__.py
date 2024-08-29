@@ -43,7 +43,7 @@ def create_app(test_config=None):  # factory function
     @app.template_filter("markdown")
     def markdown_filter(text):
         return markdown(text)
-    
+
     # test page
     @app.route("/hello")
     def hello():
@@ -80,5 +80,9 @@ def create_app(test_config=None):  # factory function
     from . import image
 
     app.register_blueprint(image.bp)
+
+    from . import rss
+
+    app.register_blueprint(rss.bp)
 
     return app
