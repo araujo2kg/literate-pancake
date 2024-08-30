@@ -89,8 +89,6 @@ def auth(client):
 
 @pytest.fixture
 def setup_image(app):
-    f = open(os.path.join(app.config["IMAGES_DIR"], "test.png"), "rb") 
+    f = open(os.path.join(app.config["IMAGES_DIR"], "test.png"), "rb")
     yield FileStorage(stream=f, filename="test.png", content_type="image/png")
     f.close()
-
-

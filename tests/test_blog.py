@@ -99,7 +99,8 @@ def test_create(client, auth, app, setup_image):
     # New post with no tags
     assert (
         client.post(
-            "/create", data={"title": "created", "body": "hello there", "tags": ""}
+            "/create",
+            data={"title": "created", "body": "hello there", "tags": ""},
         ).status_code
         == 302
     )
@@ -109,7 +110,10 @@ def test_update(client, auth, app, setup_image):
     auth.login()
     assert client.get("/1/update").status_code == 200
     # Update the element in the post table (1)
-    client.post("/1/update", data={"title": "updated", "body": "", "tags": "", "image": setup_image})
+    client.post(
+        "/1/update",
+        data={"title": "updated", "body": "", "tags": "", "image": setup_image},
+    )
 
     with app.app_context():
         db = get_db()
@@ -130,21 +134,30 @@ def test_update(client, auth, app, setup_image):
         == 302
     )
 
-    
+
 def test_update_noimage(client, setup_image, app, auth):
     auth.login()
     # Update post without image, adding image
     # Create the post
-    client.post("/create", data={"title": "no image", "body": "testing", "tags": ""})
+    client.post(
+        "/create", data={"title": "no image", "body": "testing", "tags": ""}
+    )
     # Update it adding image
-    response = client.post("/2/update", data={"title": "add image", "body": "testing", "tags": "", "image": setup_image})
+    response = client.post(
+        "/2/update",
+        data={
+            "title": "add image",
+            "body": "testing",
+            "tags": "",
+            "image": setup_image,
+        },
+    )
     assert response.status_code == 302
 
     with app.app_context():
         db = get_db()
         response = db.execute("SELECT COUNT(id) FROM post_image").fetchone()[0]
         assert response == 2
-
 
 
 @pytest.mark.parametrize(
@@ -169,8 +182,12 @@ def test_delete(client, auth, app):
     # Checks if post, reactions, comments and image were deleted
     with app.app_context():
         db = get_db()
-        reactions = db.execute("SELECT * FROM reactions WHERE post_id = 1").fetchone()
-        comments = db.execute("SELECT * FROM comments WHERE post_id = 1").fetchone()
+        reactions = db.execute(
+            "SELECT * FROM reactions WHERE post_id = 1"
+        ).fetchone()
+        comments = db.execute(
+            "SELECT * FROM comments WHERE post_id = 1"
+        ).fetchone()
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
         image = db.execute("SELECT * FROM post_image WHERE id = 1").fetchone()
         assert post is None

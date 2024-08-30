@@ -6,7 +6,9 @@ from flaskr.db import get_db
 # When an fixture is passed as argument, the function automatically calls them, so they are immediately available in the test function
 def test_register(client, app):
     assert client.get("/auth/register").status_code == 200
-    response = client.post("/auth/register", data={"username": "a", "password": "a"})
+    response = client.post(
+        "/auth/register", data={"username": "a", "password": "a"}
+    )
     assert response.headers["Location"] == "/auth/login"
 
     with app.app_context():

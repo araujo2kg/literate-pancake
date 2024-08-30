@@ -14,7 +14,8 @@ def test_create(app, auth, client):
     assert b"Comment is too short!" in result.data
 
     result = client.post(
-        "/comments/create", data={"user_id": 1, "post_id": 1, "body": "second comment"}
+        "/comments/create",
+        data={"user_id": 1, "post_id": 1, "body": "second comment"},
     )
     assert b"Comment registered." in result.data
 
@@ -60,7 +61,9 @@ def test_update(auth, client, app):
     assert b"Comment does not exist." in response.data
 
     # Succesful update redirects to post where comment was
-    response = client.post("/comments/1/update", data={"body": "new comment body"})
+    response = client.post(
+        "/comments/1/update", data={"body": "new comment body"}
+    )
     assert response.status_code == 302
     assert response.headers["Location"] == "/1/post"
 
@@ -73,7 +76,9 @@ def test_update(auth, client, app):
         )
         db.commit()
         # Try to update other user comment
-        response = client.post("/comments/2/update", data={"body": "updating comment"})
+        response = client.post(
+            "/comments/2/update", data={"body": "updating comment"}
+        )
         assert b"Forbidden" in response.data
 
 
