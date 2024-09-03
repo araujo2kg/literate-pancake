@@ -27,7 +27,7 @@ def create():
             (user_id, post_id, body),
         )
         db.commit()
-        return "Comment registered."
+        return redirect(url_for("blog.post", id=post_id))
 
     except sqlite3.IntegrityError:
         return "Invalid post."

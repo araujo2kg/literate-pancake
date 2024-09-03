@@ -107,6 +107,11 @@ header .action {
 	white-space: pre-line;
 }
 
+article img {
+	display: block;
+	margin: auto;
+}
+
 .content:last-child {
 	margin-bottom: 0;
 }
