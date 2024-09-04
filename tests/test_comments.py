@@ -17,7 +17,7 @@ def test_create(app, auth, client):
         "/comments/create",
         data={"user_id": 1, "post_id": 1, "body": "second comment"},
     )
-    assert b"Comment registered." in result.data
+    assert result.headers["Location"] == "/1/post"
 
     result = client.post(
         "/comments/create",
