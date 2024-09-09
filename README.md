@@ -100,3 +100,5 @@ CS50x is an introduction to the intellectual enterprises of computer science and
 The course covers a broad range of topics, including algorithms, data structures, software engineering, and web development, using languages such as C, Python, SQL, and JavaScript. Through problem sets and a final project, students gain hands-on experience and develop problem-solving skills applicable to real-world scenarios.
 
 If you're interested in taking CS50x, you can enroll for free on [edX](https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science) or directly through [Harvard University's CS50 website](https://cs50.harvard.edu/x/).
+
+### ![certificate](examples/CS50x.png)
