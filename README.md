@@ -3,7 +3,7 @@ An expansion of the official Flask tutorial, implementing additional features fr
 
 __Features implemented:__ Detailed post views, likes and dislikes, comments, tags, search functionality, pagination, image uploads, Markdown formatting, and an RSS feed. 
 
-## Video Demo:
+## Video Demo: https://youtu.be/7a1mQX0seSA?si=6u9bYAizM8QBfcM5
 
 ## Description:
 This project is a simple blog application built to learn and practice Flask. It includes basic functionality like creating posts, which are displayed in a main feed sorted by the most recent entries. Users can upload images, format their posts using Markdown, and add tags.
