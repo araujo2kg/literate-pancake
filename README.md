@@ -3,7 +3,7 @@ An expansion of the official Flask tutorial, implementing additional features fr
 
 __Features implemented:__ Detailed post views, likes and dislikes, comments, tags, search functionality, pagination, image uploads, Markdown formatting, and an RSS feed. 
 
-## Video Demo:
+## Video Demo: https://youtu.be/7a1mQX0seSA?si=6u9bYAizM8QBfcM5
 
 ## Description:
 This project is a simple blog application built to learn and practice Flask. It includes basic functionality like creating posts, which are displayed in a main feed sorted by the most recent entries. Users can upload images, format their posts using Markdown, and add tags.
@@ -100,5 +100,6 @@ CS50x is an introduction to the intellectual enterprises of computer science and
 The course covers a broad range of topics, including algorithms, data structures, software engineering, and web development, using languages such as C, Python, SQL, and JavaScript. Through problem sets and a final project, students gain hands-on experience and develop problem-solving skills applicable to real-world scenarios.
 
 If you're interested in taking CS50x, you can enroll for free on [edX](https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science) or directly through [Harvard University's CS50 website](https://cs50.harvard.edu/x/).
+
 
 ### ![certificate](examples/CS50x.png)
